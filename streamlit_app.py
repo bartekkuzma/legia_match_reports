@@ -1,0 +1,152 @@
+import os
+
+import pandas as pd
+import streamlit as st
+from statsbombpy import sb
+
+creds = {"user": "bartkuzma@gmail.com", "passwd": "v1x6CQUt"}
+
+from goals_and_chances_tables import GoalChancesTables
+from match_events_tables import RecoveriesTables, ShotsTables, ThrowInsTables
+
+st.set_page_config(
+    page_title="Legia Warszawa Match Reports",
+    layout="wide",
+    )
+st.markdown(
+    """
+    <style>
+    .main {
+        max-width: 85%;  /* Adjust this value for more or less width */
+        margin: 0 auto;  /* Center the content */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Custom CSS for vertical centering
+st.markdown("""
+    <style>
+    .custom-title {
+        font-size: 100px;  /* Adjust font size as needed */
+        font-weight: bold;  /* Optional: make the text bold */
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+col1, col2= st.columns([1, 10])
+with col1:
+    st.image("legia.ico")
+with col2:
+    # st.title("Legia Warszawa match reports")
+    st.markdown('<div class="centered"><h1 class="custom-title">Legia Warszawa match reports</h1></div>', unsafe_allow_html=True)
+st.subheader("Choose competition and match!")
+
+team_name = "Legia Warszawa"
+season_id = 317
+competitions = (38, 353)
+
+matches = pd.DataFrame()
+for comp_id in competitions:
+    comp_matches = sb.matches(competition_id=comp_id, season_id=season_id, creds=creds)
+    matches = pd.concat([matches, comp_matches])
+matches = matches[((matches["home_team"] == team_name) | (matches["away_team"] == team_name)) & (matches["match_status"] == "available")]
+
+competition = st.selectbox("Select a competition:", matches["competition"].sort_values().unique(), index=None)
+match_selection = matches[matches["competition"] == competition].sort_values("match_date", ascending=False)
+match_selection = {f"{home_team} vs {away_team}": match_id for match_id, home_team, away_team in zip(match_selection['match_id'], match_selection['home_team'], match_selection['away_team'])}
+match = st.selectbox("Select a match:", match_selection.keys(), index=None)
+
+if match:
+    # Table of Contents
+    st.markdown("""
+    ## Table of Contents
+    1. [Goals analysis](#goals-analysis)
+    2. [Chances analysis](#chances-analysis)
+    3. [Shots outcome](#shots-outcome)
+    4. [Throw-Ins Outcome](#throw-ins-outcome)
+    5. [Recoveries Stats](#recoveries-stats)
+
+    """, unsafe_allow_html=True)
+
+
+    match_id = match_selection[match]
+    directory = f"{match_id}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    match_details = matches[matches["match_id"] == match_id]
+
+    match_events = sb.events(match_id=match_id, creds=creds, include_360_metrics=True)
+    match_events = match_events.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
+    match_events = match_events.replace("Lucas Lima Linhares","Luquinhas")
+    match_events = match_events.replace("Marc Gual Huguet","Marc Gual")
+    match_events = match_events.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
+    match_events = match_events.replace("Sergio Barcia Laranxeira","Sergio Barcia")
+
+    players_match_stats = sb.player_match_stats(match_id=match_id, creds=creds)
+    players_match_stats = players_match_stats.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
+    players_match_stats = players_match_stats.replace("Lucas Lima Linhares","Luquinhas")
+    players_match_stats = players_match_stats.replace("Marc Gual Huguet","Marc Gual")
+    players_match_stats = players_match_stats.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
+    players_match_stats = players_match_stats.replace("Sergio Barcia Laranxeira","Sergio Barcia")
+
+    score = f'{match_details["home_team"].item()} {int(match_details["home_score"].item())} : {int(match_details["away_score"].item())} {match_details["away_team"].item()}'
+    st.header(score)
+    st.subheader(f'Date: {match_details["match_date"].item()}')
+    st.subheader(f'Referee: {match_details["referee"].item()}')
+
+    goals = match_events[match_events["shot_outcome"] == "Goal"]
+
+    soccer_analysis = GoalChancesTables(goals, team_for=team_name)
+    data_files = {
+        "goals_type": "goals_type.json",
+        "chances_time": "chances_time.json",
+        "chances_place": "chances_place.json",
+        "chances_type": "chances_type.json"
+    }
+    figs = soccer_analysis.generate_all_tables(directory, data_files)
+    
+    st.markdown("## Goals Analysis", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([4, 4, 6])
+    with col1:
+        st.pyplot(figs["goals_time"])
+    with col2:
+        st.pyplot(figs["goals_place"])
+    with col3:
+        st.pyplot(figs["goals_type"])
+        
+    st.markdown("## Chances Analysis", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([4, 4, 6])
+    with col1:
+        st.pyplot(figs["chances_time"])
+    with col2:
+        st.pyplot(figs["chances_place"])
+    with col3:
+        st.pyplot(figs["chances_type"])
+
+    st.markdown("## Shots Outcome", unsafe_allow_html=True)
+    shots = match_events[match_events["type"] == "Shot"]
+    shot_tables = ShotsTables(shots, team_for=team_name)
+    col1, col2, _ = st.columns([2, 5, 2])
+    with col1:
+        st.pyplot(shot_tables.plot_team_shots_table(directory=directory))
+    with col2:
+        st.pyplot(shot_tables.plot_individual_shots_table(directory=directory))
+
+    st.markdown("## Throw-Ins Outcome", unsafe_allow_html=True)
+    passes = match_events[match_events["type"] == "Pass"]
+    throw_ins_tables = ThrowInsTables(passes, team_for=team_name)
+    col1, col2, _,  _ = st.columns(4)
+    with col1:
+        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=True))
+    with col2:
+        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False))
+
+    st.markdown("## Recoveries Stats", unsafe_allow_html=True)
+    col, _, _, _ = st.columns(4)
+    with col:
+        recoveries_tables = RecoveriesTables(match_events, team_for=team_name)
+        st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
+        
