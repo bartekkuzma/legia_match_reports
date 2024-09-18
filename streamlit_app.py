@@ -111,7 +111,7 @@ if match:
     figs = soccer_analysis.generate_all_tables(directory, data_files)
     
     st.markdown("## Goals Analysis", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([4, 4, 6])
+    col1, col2, col3, _ = st.columns([4, 4, 6, 4])
     with col1:
         st.pyplot(figs["goals_time"])
     with col2:
@@ -120,7 +120,7 @@ if match:
         st.pyplot(figs["goals_type"])
         
     st.markdown("## Chances Analysis", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([4, 4, 6])
+    col1, col2, col3, _ = st.columns([4, 4, 6, 4])
     with col1:
         st.pyplot(figs["chances_time"])
     with col2:
@@ -153,7 +153,7 @@ if match:
         st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
         
     st.markdown("## Passing Performance", unsafe_allow_html=True)
-    _, col, _, = st.columns([1, 4, 1])
+    col, _, = st.columns([5, 2])
     with col:
         xpass_charts = ExpectedPassChart(passes, team_for=team_name)
         st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
