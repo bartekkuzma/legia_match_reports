@@ -29,7 +29,7 @@ st.markdown(
 st.markdown("""
     <style>
     .custom-title {
-        font-size: 100px;  /* Adjust font size as needed */
+        font-size: 80px;  /* Adjust font size as needed */
         font-weight: bold;  /* Optional: make the text bold */
     }
     </style>
