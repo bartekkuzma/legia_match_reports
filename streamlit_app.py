@@ -9,6 +9,7 @@ creds = {"user": st.secrets["user"], "passwd": st.secrets["password"]}
 from final_third_touches_plot import FinalThirdTouchesPlots
 from goals_and_chances_tables import GoalChancesTables
 from match_events_tables import RecoveriesTables, ShotsTables, ThrowInsTables
+from table_of_contents import Toc
 from xpass_chart import ExpectedPassChart
 
 st.set_page_config(
@@ -61,23 +62,8 @@ match_selection = {f"{home_team} vs {away_team}": match_id for match_id, home_te
 match = st.selectbox("Select a match:", match_selection.keys(), index=None)
 
 if match:
-    # Table of Contents
-    st.markdown("""
-    ## Table of Contents
-    1. [Goals analysis](#goals-analysis)
-    2. [Chances analysis](#chances-analysis)
-    3. [Shots outcome](#shots-outcome)
-    4. [Throw-Ins Outcome](#throw-ins-outcome)
-    5. [Recoveries Stats](#recoveries-stats)
-    6. [Passing Performance](#passing-performance)            
-    7. [Final Third Touches](#final-third-touches)            
-    8. [](#)            
-    9. [](#)            
-    10. [](#)            
-    11. [](#)            
-
-    """, unsafe_allow_html=True)
-
+    toc = Toc()
+    toc.placeholder(sidebar=True)
 
     match_id = match_selection[match]
     directory = f"matches/{match_id}"
@@ -115,8 +101,8 @@ if match:
         "chances_type": "chances_type.json"
     }
     figs = soccer_analysis.generate_all_tables(directory, data_files)
-    
-    st.markdown("## Goals Analysis", unsafe_allow_html=True)
+
+    toc.header("Goals Analysis")    
     col1, col2, col3, _ = st.columns([4, 4, 6, 4])
     with col1:
         st.pyplot(figs["goals_time"])
@@ -124,8 +110,8 @@ if match:
         st.pyplot(figs["goals_place"])
     with col3:
         st.pyplot(figs["goals_type"])
-        
-    st.markdown("## Chances Analysis", unsafe_allow_html=True)
+
+    toc.header("Chances Analysis")
     col1, col2, col3, _ = st.columns([4, 4, 6, 4])
     with col1:
         st.pyplot(figs["chances_time"])
@@ -133,8 +119,8 @@ if match:
         st.pyplot(figs["chances_place"])
     with col3:
         st.pyplot(figs["chances_type"])
-
-    st.markdown("## Shots Outcome", unsafe_allow_html=True)
+    
+    toc.header("Shots Outcome")
     shots = match_events[match_events["type"] == "Shot"]
     shot_tables = ShotsTables(shots, team_for=team_name)
     col1, col2, _ = st.columns([2, 5, 2])
@@ -143,7 +129,7 @@ if match:
     with col2:
         st.pyplot(shot_tables.plot_individual_shots_table(directory=directory))
 
-    st.markdown("## Throw-Ins Outcome", unsafe_allow_html=True)
+    toc.header("Throw-Ins Outcomee")
     passes = match_events[match_events["type"] == "Pass"]
     throw_ins_tables = ThrowInsTables(passes, team_for=team_name)
     col1, col2, _,  _ = st.columns(4)
@@ -152,21 +138,22 @@ if match:
     with col2:
         st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False))
 
-    st.markdown("## Recoveries Stats", unsafe_allow_html=True)
+    toc.header("Recoveries Statse")
     col, _, _, _ = st.columns(4)
     with col:
         recoveries_tables = RecoveriesTables(match_events, team_for=team_name)
         st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
         
-    st.markdown("## Passing Performance", unsafe_allow_html=True)
+    toc.header("Passing Performance")
     col, _, = st.columns([5, 2])
     with col:
         xpass_charts = ExpectedPassChart(passes, team_for=team_name)
         st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
 
-    st.markdown("## Final Third Touches", unsafe_allow_html=True)
+    toc.header("Final Third Touches")
     col, _, = st.columns([5, 2])
     with col:
         final_third_touches = FinalThirdTouchesPlots(match_events, team_for=team_name)
         st.pyplot(final_third_touches.plot_final_third_touches(directory=directory))
-        
+    
+    toc.generate()
