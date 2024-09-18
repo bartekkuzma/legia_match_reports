@@ -11,7 +11,7 @@ class Constants:
         "penalty_box_length": 18.0,
         "penalty_box_left_band": 18.0,
         "eleven_metres": 12.0,
-        "final_third": 35.0,
+        "final_third": 40.0,
         "six_yard_box": 30.0,
         "b2_zone": 50.0,
         "p1": 20.0,
@@ -24,7 +24,10 @@ class Constants:
         "yellow": (255/255, 240/255, 0/255, 0.75),
         "red": (242/255, 38/255, 19/255, 0.75),
         "blue": (3/255, 138/255, 255/255, 0.75),
-        "black": "black"
+        "black": "black",
+        "white": "white",
+        "sb_red": '#e21017',
+        "sb_grey": '#9a9a9a',
     }
 
     FONT = "Avenir"
@@ -35,6 +38,8 @@ class Constants:
     ODD_ROW_COLOR = "#fff1d5"
     HEADER_COLOR = "#cdb79e"
     EDGE_COLOR = "black"
+    TEAM_FOR_COLOR = "#002B54"
+    TEAM_AGAINST_COLOR = "#e2001a"
 
     # Additional color mappings
     POSITIVE_COLOR = COLORS["green"]

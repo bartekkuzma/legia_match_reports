@@ -6,6 +6,7 @@ from statsbombpy import sb
 
 creds = {"user": st.secrets["user"], "passwd": st.secrets["password"]}
 
+from final_third_touches_plot import FinalThirdTouchesPlots
 from goals_and_chances_tables import GoalChancesTables
 from match_events_tables import RecoveriesTables, ShotsTables, ThrowInsTables
 from xpass_chart import ExpectedPassChart
@@ -69,6 +70,11 @@ if match:
     4. [Throw-Ins Outcome](#throw-ins-outcome)
     5. [Recoveries Stats](#recoveries-stats)
     6. [Passing Performance](#passing-performance)            
+    7. [Final Third Touches](#final-third-touches)            
+    8. [](#)            
+    9. [](#)            
+    10. [](#)            
+    11. [](#)            
 
     """, unsafe_allow_html=True)
 
@@ -157,4 +163,10 @@ if match:
     with col:
         xpass_charts = ExpectedPassChart(passes, team_for=team_name)
         st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
+
+    st.markdown("## Final Third Touches", unsafe_allow_html=True)
+    col, _, = st.columns([5, 2])
+    with col:
+        final_third_touches = FinalThirdTouchesPlots(match_events, team_for=team_name)
+        st.pyplot(final_third_touches.plot_final_third_touches(directory=directory))
         

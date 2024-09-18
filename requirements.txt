@@ -5,3 +5,5 @@ streamlit
 plottable
 statsbombpy
 seaborn
+mplsoccer
+scipy
