@@ -129,7 +129,7 @@ if match:
     with col2:
         st.pyplot(shot_tables.plot_individual_shots_table(directory=directory))
 
-    toc.header("Throw-Ins Outcomee")
+    toc.header("Throw-Ins Outcome")
     passes = match_events[match_events["type"] == "Pass"]
     throw_ins_tables = ThrowInsTables(passes, team_for=team_name)
     col1, col2, _,  _ = st.columns(4)
