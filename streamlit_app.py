@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 from statsbombpy import sb
 
-creds = {"user": "bartkuzma@gmail.com", "passwd": "v1x6CQUt"}
+creds = {"user": st.secrets["user"], "passwd": st.secrets["password"]}
 
 from goals_and_chances_tables import GoalChancesTables
 from match_events_tables import RecoveriesTables, ShotsTables, ThrowInsTables
