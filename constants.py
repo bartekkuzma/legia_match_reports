@@ -1,3 +1,6 @@
+import seaborn as sns
+
+
 class Constants:
     """
     A class to store constant values used in the GoalsAnalysis class.
@@ -20,7 +23,8 @@ class Constants:
         "green": (46/255, 204/255, 113/255, 0.75),
         "yellow": (255/255, 240/255, 0/255, 0.75),
         "red": (242/255, 38/255, 19/255, 0.75),
-        "blue": (3/255, 138/255, 255/255, 0.75)
+        "blue": (3/255, 138/255, 255/255, 0.75),
+        "black": "black"
     }
 
     FONT = "Avenir"
@@ -30,6 +34,7 @@ class Constants:
     EVEN_ROW_COLOR = "#fffae6"
     ODD_ROW_COLOR = "#fff1d5"
     HEADER_COLOR = "#cdb79e"
+    EDGE_COLOR = "black"
 
     # Additional color mappings
     POSITIVE_COLOR = COLORS["green"]
@@ -38,4 +43,6 @@ class Constants:
 
     DPI = 300
     PAD_INCHES = 0
+
+    CMAPLIST_XPASS = sns.color_palette("Spectral")
     

@@ -8,6 +8,7 @@ creds = {"user": st.secrets["user"], "passwd": st.secrets["password"]}
 
 from goals_and_chances_tables import GoalChancesTables
 from match_events_tables import RecoveriesTables, ShotsTables, ThrowInsTables
+from xpass_chart import ExpectedPassChart
 
 st.set_page_config(
     page_title="Legia Warszawa Match Reports",
@@ -67,12 +68,13 @@ if match:
     3. [Shots outcome](#shots-outcome)
     4. [Throw-Ins Outcome](#throw-ins-outcome)
     5. [Recoveries Stats](#recoveries-stats)
+    6. [Passing Performance](#passing-performance)            
 
     """, unsafe_allow_html=True)
 
 
     match_id = match_selection[match]
-    directory = f"{match_id}"
+    directory = f"matches/{match_id}"
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -149,4 +151,10 @@ if match:
     with col:
         recoveries_tables = RecoveriesTables(match_events, team_for=team_name)
         st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
+        
+    st.markdown("## Passing Performance", unsafe_allow_html=True)
+    _, col, _, = st.columns([1, 4, 1])
+    with col:
+        xpass_charts = ExpectedPassChart(passes, team_for=team_name)
+        st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
         
