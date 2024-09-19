@@ -6,12 +6,14 @@ from statsbombpy import sb
 
 creds = {"user": st.secrets["user"], "passwd": st.secrets["password"]}
 
-from final_third_touches_plot import FinalThirdTouchesPlots
-from game_openings_pitches import GameOpeningsPitches
-from goals_and_chances_tables import GoalChancesTables
-from match_events_tables import RecoveriesTables, ShotsTables, ThrowInsTables
+from plots_and_charts.final_third_touches_plot import FinalThirdTouchesPlots
+from plots_and_charts.game_openings_pitches import GameOpeningsPitches
+from plots_and_charts.goals_and_chances_tables import GoalChancesTables
+from plots_and_charts.key_passes_pitches import KeyPassesPitches
+from plots_and_charts.match_events_tables import (RecoveriesTables,
+                                                  ShotsTables, ThrowInsTables)
+from plots_and_charts.xpass_chart import ExpectedPassChart
 from table_of_contents import Toc
-from xpass_chart import ExpectedPassChart
 
 st.set_page_config(
     page_title="Legia Warszawa Match Reports",
@@ -165,4 +167,13 @@ if match:
         st.pyplot(game_openings.plot_game_openings(team_for=True, directory=directory))
     with col2:
         st.pyplot(game_openings.plot_game_openings(team_for=False, directory=directory))   
+    toc.generate()
+
+    toc.header("Key Passes")
+    col1, col2, _, = st.columns([3, 3, 2])
+    key_passes = KeyPassesPitches(match_events, team_for=team_name)
+    with col1:
+        st.pyplot(key_passes.plot_key_passes(team_for=True, directory=directory))
+    with col2:
+        st.pyplot(key_passes.plot_key_passes(team_for=False, directory=directory))   
     toc.generate()

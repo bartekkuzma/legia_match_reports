@@ -210,7 +210,6 @@ class GameOpeningsPitches:
             }
 
         zones = []
-        pitch_height = Constants.PITCH_DIMS["pitch_length"]
         for i, prefix in enumerate(["P1", "P2", "P3"]):
             if i == 0:
                 y = 0
