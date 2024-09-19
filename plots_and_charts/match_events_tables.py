@@ -59,7 +59,7 @@ class ShotsTables:
         shots.columns = ["to_be_index", "id"]
         return shots
     
-    def plot_team_shots_table(self, directory: str, figsize: tuple[int, int] = (4, 6)):
+    def plot_team_shots_table(self, directory: str, figsize: tuple[int, int] = (4, 8)):
         shots_df = self.preprocess_shots()
 
         balance = shots_df.iloc[-1]["id"].item()
@@ -115,7 +115,7 @@ class ShotsTables:
 
         return stats_per_player
 
-    def plot_individual_shots_table(self, directory: str, figsize: tuple[int, int] = (10, 6)):
+    def plot_individual_shots_table(self, directory: str, figsize: tuple[int, int] = (10, 8)):
         shots_df = self.preprocess_shots_individuals()
 
         table_col_defs = [

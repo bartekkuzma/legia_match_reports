@@ -1,11 +1,13 @@
 import os
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 from statsbombpy import sb
 
 creds = {"user": st.secrets["user"], "passwd": st.secrets["password"]}
 
+from plots_and_charts.benchmark_chart import BenchmarkChart
 from plots_and_charts.final_third_touches_plot import FinalThirdTouchesPlots
 from plots_and_charts.game_openings_pitches import GameOpeningsPitches
 from plots_and_charts.goals_and_chances_tables import GoalChancesTables
@@ -57,10 +59,11 @@ matches = pd.DataFrame()
 for comp_id in competitions:
     comp_matches = sb.matches(competition_id=comp_id, season_id=season_id, creds=creds)
     matches = pd.concat([matches, comp_matches])
-matches = matches[((matches["home_team"] == team_name) | (matches["away_team"] == team_name)) & (matches["match_status"] == "available")]
 
-competition = st.selectbox("Select a competition:", matches["competition"].sort_values().unique(), index=None)
-match_selection = matches[matches["competition"] == competition].sort_values("match_date", ascending=False)
+available_matches = matches[((matches["home_team"] == team_name) | (matches["away_team"] == team_name)) & (matches["match_status"] == "available")]
+
+competition = st.selectbox("Select a competition:", available_matches["competition"].sort_values().unique(), index=None)
+match_selection = available_matches[available_matches["competition"] == competition].sort_values("match_date", ascending=False)
 match_selection = {f"{home_team} vs {away_team}": match_id for match_id, home_team, away_team in zip(match_selection['match_id'], match_selection['home_team'], match_selection['away_team'])}
 match = st.selectbox("Select a match:", match_selection.keys(), index=None)
 
@@ -73,7 +76,8 @@ if match:
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    match_details = matches[matches["match_id"] == match_id]
+    match_details = available_matches[available_matches["match_id"] == match_id]
+    opponent = np.where(match_details['home_team'] == team_name, match_details['away_team'], match_details['home_team']).item()
 
     match_events = sb.events(match_id=match_id, creds=creds, include_360_metrics=True)
     match_events = match_events.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
@@ -94,8 +98,14 @@ if match:
     st.subheader(f'Date: {match_details["match_date"].item()}')
     st.subheader(f'Referee: {match_details["referee"].item()}')
 
-    goals = match_events[match_events["shot_outcome"] == "Goal"]
+    toc.header("Benchmark")
+    col, _, = st.columns([5, 1])
+    with col:
+        benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
+        st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
 
+
+    goals = match_events[match_events["shot_outcome"] == "Goal"]
     soccer_analysis = GoalChancesTables(goals, team_for=team_name)
     data_files = {
         "goals_type": "goals_type.json",

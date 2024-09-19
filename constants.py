@@ -40,6 +40,8 @@ class Constants:
     EDGE_COLOR = "black"
     TEAM_FOR_COLOR = "#002B54"
     TEAM_AGAINST_COLOR = "#e2001a"
+    DARK_BACKGROUND_COLOR = "#2D2D34"
+    LIGHT_TEXT_COLOR = '#FBFEFB'
 
     # Additional color mappings
     POSITIVE_COLOR = COLORS["green"]

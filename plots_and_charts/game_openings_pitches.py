@@ -173,7 +173,7 @@ class GameOpeningsPitches:
         )
 
         # Add the legend to the plot
-        ax.legend(loc="upper right", fontsize=20)  # You can adjust location and font size as needed                        
+        ax.legend(loc="upper right", fontsize=22)  # You can adjust location and font size as needed                        
             
         title = self.team_for if team_for else "Opponent"
         ax.set_title(f"{title}'s game openings", fontsize=30, color=Constants.TEXT_COLOR)

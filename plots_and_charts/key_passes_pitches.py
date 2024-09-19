@@ -70,7 +70,8 @@ class KeyPassesPitches:
         pitch.arrows(xstart=individual["x"], ystart=individual["y"], xend=individual["x_end"], yend=individual["y_end"], width=2,
              headwidth=3, headlength=4, color=Constants.COLORS["blue"], ax=ax, label='Individual')
 
-        ax.legend(facecolor=Constants.COLORS["sb_grey"], handlelength=10, edgecolor='None', fontsize=24, loc='lower left', labelcolor=Constants.COLORS["white"])
+        ax.legend(facecolor=Constants.COLORS["white"], handlelength=6, edgecolor=Constants.COLORS["sb_grey"], fontsize=24, loc='lower left', labelcolor=Constants.TEXT_COLOR)
+
         # Set the title
         title = self.team_for if team_for else "Opponent"
         ax_title = ax.set_title(f"{title}'s key passes", fontsize=30, color=Constants.TEXT_COLOR)
