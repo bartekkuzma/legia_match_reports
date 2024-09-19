@@ -92,70 +92,70 @@ if match:
     st.subheader(f'Date: {match_details["match_date"].item()}')
     st.subheader(f'Referee: {match_details["referee"].item()}')
 
-    # goals = match_events[match_events["shot_outcome"] == "Goal"]
+    goals = match_events[match_events["shot_outcome"] == "Goal"]
 
-    # soccer_analysis = GoalChancesTables(goals, team_for=team_name)
-    # data_files = {
-    #     "goals_type": "goals_type.json",
-    #     "chances_time": "chances_time.json",
-    #     "chances_place": "chances_place.json",
-    #     "chances_type": "chances_type.json"
-    # }
-    # figs = soccer_analysis.generate_all_tables(directory, data_files)
+    soccer_analysis = GoalChancesTables(goals, team_for=team_name)
+    data_files = {
+        "goals_type": "goals_type.json",
+        "chances_time": "chances_time.json",
+        "chances_place": "chances_place.json",
+        "chances_type": "chances_type.json"
+    }
+    figs = soccer_analysis.generate_all_tables(directory, data_files)
 
-    # toc.header("Goals Analysis")    
-    # col1, col2, col3, _ = st.columns([4, 4, 6, 4])
-    # with col1:
-    #     st.pyplot(figs["goals_time"])
-    # with col2:
-    #     st.pyplot(figs["goals_place"])
-    # with col3:
-    #     st.pyplot(figs["goals_type"])
+    toc.header("Goals Analysis")    
+    col1, col2, col3, _ = st.columns([4, 4, 6, 4])
+    with col1:
+        st.pyplot(figs["goals_time"])
+    with col2:
+        st.pyplot(figs["goals_place"])
+    with col3:
+        st.pyplot(figs["goals_type"])
 
-    # toc.header("Chances Analysis")
-    # col1, col2, col3, _ = st.columns([4, 4, 6, 4])
-    # with col1:
-    #     st.pyplot(figs["chances_time"])
-    # with col2:
-    #     st.pyplot(figs["chances_place"])
-    # with col3:
-    #     st.pyplot(figs["chances_type"])
+    toc.header("Chances Analysis")
+    col1, col2, col3, _ = st.columns([4, 4, 6, 4])
+    with col1:
+        st.pyplot(figs["chances_time"])
+    with col2:
+        st.pyplot(figs["chances_place"])
+    with col3:
+        st.pyplot(figs["chances_type"])
     
-    # toc.header("Shots Outcome")
-    # shots = match_events[match_events["type"] == "Shot"]
-    # shot_tables = ShotsTables(shots, team_for=team_name)
-    # col1, col2, _ = st.columns([2, 5, 2])
-    # with col1:
-    #     st.pyplot(shot_tables.plot_team_shots_table(directory=directory))
-    # with col2:
-    #     st.pyplot(shot_tables.plot_individual_shots_table(directory=directory))
+    toc.header("Shots Outcome")
+    shots = match_events[match_events["type"] == "Shot"]
+    shot_tables = ShotsTables(shots, team_for=team_name)
+    col1, col2, _ = st.columns([2, 5, 2])
+    with col1:
+        st.pyplot(shot_tables.plot_team_shots_table(directory=directory))
+    with col2:
+        st.pyplot(shot_tables.plot_individual_shots_table(directory=directory))
 
-    # toc.header("Throw-Ins Outcome")
-    # passes = match_events[match_events["type"] == "Pass"]
-    # throw_ins_tables = ThrowInsTables(passes, team_for=team_name)
-    # col1, col2, _,  _ = st.columns(4)
-    # with col1:
-    #     st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=True))
-    # with col2:
-    #     st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False))
+    toc.header("Throw-Ins Outcome")
+    passes = match_events[match_events["type"] == "Pass"]
+    throw_ins_tables = ThrowInsTables(passes, team_for=team_name)
+    col1, col2, _,  _ = st.columns(4)
+    with col1:
+        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=True))
+    with col2:
+        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False))
 
-    # toc.header("Recoveries Statse")
-    # col, _, _, _ = st.columns(4)
-    # with col:
-    #     recoveries_tables = RecoveriesTables(match_events, team_for=team_name)
-    #     st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
+    toc.header("Recoveries Statse")
+    col, _, _, _ = st.columns(4)
+    with col:
+        recoveries_tables = RecoveriesTables(match_events, team_for=team_name)
+        st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
         
-    # toc.header("Passing Performance")
-    # col, _, = st.columns([5, 2])
-    # with col:
-    #     xpass_charts = ExpectedPassChart(passes, team_for=team_name)
-    #     st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
+    toc.header("Passing Performance")
+    col, _, = st.columns([5, 2])
+    with col:
+        xpass_charts = ExpectedPassChart(passes, team_for=team_name)
+        st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
 
-    # toc.header("Final Third Touches")
-    # col, _, = st.columns([5, 2])
-    # with col:
-    #     final_third_touches = FinalThirdTouchesPlots(match_events, team_for=team_name)
-    #     st.pyplot(final_third_touches.plot_final_third_touches(directory=directory))
+    toc.header("Final Third Touches")
+    col, _, = st.columns([5, 2])
+    with col:
+        final_third_touches = FinalThirdTouchesPlots(match_events, team_for=team_name)
+        st.pyplot(final_third_touches.plot_final_third_touches(directory=directory))
 
     toc.header("Game Openings")
     col1, col2, _, = st.columns([3, 3, 2])
