@@ -15,8 +15,8 @@ class Constants:
         "six_yard_box": 30.0,
         "b2_zone": 50.0,
         "p1": 20.0,
-        "p2": 30.0,
-        "p3": 50.0
+        "p2": 50.0,
+        "p3": 70.0
     }
 
     COLORS = {
