@@ -78,12 +78,12 @@ class GameOpeningsPitches:
         goal_kicks.loc[:, 'x_end'] = goal_kicks['pass_end_location'].str[0]
         goal_kicks.loc[:, 'y_end'] = goal_kicks['pass_end_location'].str[1]
         goal_kicks.loc[:, 'end_zone_gk'] = goal_kicks.apply(lambda row: self.classify_gk_zones(row['x_end'], row['y_end']), axis=1)   
-        goal_kicks.loc[:, "pass_outcome"] = goal_kicks["pass_outcome"].fillna("Successful")
-        data_points = goal_kicks[["team", "x_end", "y_end"]]
+        goal_kicks.loc[:, "pass_outcome"] = goal_kicks["pass_outcome"].fillna("Complete")
+        data_points = goal_kicks[["team", "x_end", "y_end", "pass_outcome"]]
 
         grouped_data = goal_kicks.groupby(["team", "end_zone_gk", "pass_outcome"], dropna=False).count()["id"].to_frame().reset_index()
         pivot_data = grouped_data.pivot_table(index=["team", "end_zone_gk"], columns="pass_outcome", values="id", fill_value=0)
-        pivot_data["ratio"] = pivot_data.apply(lambda x: f"{x.get('Successful', 0)}/{x.get('Successful', 0) + x.get('Incomplete', 0)}", axis=1)
+        pivot_data["ratio"] = pivot_data.apply(lambda x: f"{x.get('Complete', 0)}/{x.get('Complete', 0) + x.get('Incomplete', 0)}", axis=1)
         
         return pivot_data.reset_index(), data_points
 
@@ -108,7 +108,9 @@ class GameOpeningsPitches:
         zone_values = {zone: "0/0" for zone in self.gk_zones}
 
         gk_data = gk_data[(gk_data["team"] == self.team_for) == team_for]
-        data_points = data_points[(data_points["team"] == self.team_for) == team_for]
+        data_points_complete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Complete")]
+        data_points_incomplete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Incomplete")]
+
         for _, row in gk_data.iterrows():
             zone = row['end_zone_gk']
             ratio = row['ratio']
@@ -144,17 +146,35 @@ class GameOpeningsPitches:
             color=Constants.COLORS["black"], ha='center', va='bottom', fontsize=24, zorder=2
         )
 
-        pitch.scatter(
-            data_points.x_end, 
-            data_points.y_end,
+        # Scatter plot for complete passes
+        complete_scatter = pitch.scatter(
+            data_points_complete.x_end, 
+            data_points_complete.y_end,
+            s=200,
+            edgecolors=Constants.COLORS["black"],
+            c=Constants.COLORS["blue"], 
+            marker='o',
+            ax=ax,
+            zorder=10,
+            label="Complete"  # Add label for legend
+        )
+
+        # Scatter plot for incomplete passes
+        incomplete_scatter = pitch.scatter(
+            data_points_incomplete.x_end, 
+            data_points_incomplete.y_end,
             s=200,
             edgecolors=Constants.COLORS["black"],
             c=Constants.COLORS["sb_grey"], 
             marker='o',
             ax=ax,
-            zorder=10
-            )
-    
+            zorder=10,
+            label="Incomplete"  # Add label for legend
+        )
+
+        # Add the legend to the plot
+        ax.legend(loc="upper right", fontsize=20)  # You can adjust location and font size as needed                        
+            
         title = self.team_for if team_for else "Opponent"
         ax.set_title(f"{title}'s game openings", fontsize=30, color=Constants.TEXT_COLOR)
 
