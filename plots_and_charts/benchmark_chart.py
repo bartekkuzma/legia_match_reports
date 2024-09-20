@@ -64,15 +64,15 @@ class BenchmarkChart:
         plot_data["alpha"] = np.select(conditions, values)
         # edge color
         if team == self.team_for:
-            values = [Constants.TEAM_AGAINST_COLOR, Constants.TEAM_FOR_COLOR]
+            values = [str(Constants.TEAM_AGAINST_COLOR), str(Constants.TEAM_FOR_COLOR)]
         else:
-            values = [Constants.TEAM_FOR_COLOR, Constants.TEAM_AGAINST_COLOR]
+            values = [str(Constants.TEAM_FOR_COLOR), str(Constants.TEAM_AGAINST_COLOR)]
         plot_data["ec"] = np.select(conditions, values)
         # fill color
         if team == self.team_for:
-            values = [Constants.TEAM_FOR_COLOR, Constants.TEAM_AGAINST_COLOR]
+            values = [str(Constants.TEAM_FOR_COLOR), str(Constants.TEAM_AGAINST_COLOR)]
         else:
-            values = [Constants.TEAM_AGAINST_COLOR, Constants.TEAM_FOR_COLOR]
+            values = [str(Constants.TEAM_AGAINST_COLOR), str(Constants.TEAM_FOR_COLOR)]
         plot_data["color"] = np.select(conditions, values)
         # size
         values = [5000, 500]
