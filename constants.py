@@ -28,6 +28,21 @@ class Constants:
         "white": "white",
         "sb_red": '#e21017',
         "sb_grey": '#9a9a9a',
+        "dark_grey": "#4A4A4A",
+        "medium_dark_grey": "#696969",
+        "medium_grey": "#808080",
+        "medium_light_grey": "#A9A9A9",
+        "light_grey": "#C0C0C0",
+        "very_light_grey": "#D3D3D3",
+        "almost_white": "#F5F5F5",
+        "very_pale_red": "#FFF0F0",
+        "pale_red": "#FFE0E0",
+        "light_pale_red": "#FFD0D0",
+        "light_red": "#FFA0A0",
+        "medium_light_red": "#FF7070",
+        "medium_red": "#FF4040",
+        "strong_red": "#FF0000",
+        "sbred": "#E21017",
     }
 
     FONT = "Avenir"
@@ -52,4 +67,10 @@ class Constants:
     PAD_INCHES = 0
 
     CMAPLIST_XPASS = sns.color_palette("Spectral")
+    CMAP_FOR_HEATMAP = [
+        COLORS["dark_grey"], COLORS["medium_dark_grey"], COLORS["medium_grey"], COLORS["medium_light_grey"],
+        COLORS["light_grey"], COLORS["very_light_grey"], COLORS["almost_white"], COLORS["white"], 
+        COLORS["very_pale_red"], COLORS["pale_red"], COLORS["light_pale_red"], COLORS["light_red"], 
+        COLORS["medium_light_red"], COLORS["medium_red"], COLORS["strong_red"], COLORS["sbred"]
+    ]
     

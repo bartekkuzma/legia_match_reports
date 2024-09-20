@@ -14,6 +14,7 @@ from plots_and_charts.goals_and_chances_tables import GoalChancesTables
 from plots_and_charts.key_passes_pitches import KeyPassesPitches
 from plots_and_charts.match_events_tables import (RecoveriesTables,
                                                   ShotsTables, ThrowInsTables)
+from plots_and_charts.obv_pitches import ObvPitches
 from plots_and_charts.xpass_chart import ExpectedPassChart
 from table_of_contents import Toc
 
@@ -104,6 +105,14 @@ if match:
         benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
         st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
 
+    toc.header("OBV Heatmap")
+    col1, col2, _, = st.columns([3, 3, 2])
+    obv_heatmap = ObvPitches(match_events, team_for=team_name)
+    with col1:
+        st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=True, directory=directory))
+    with col2:
+        st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=False, directory=directory))   
+
 
     goals = match_events[match_events["shot_outcome"] == "Goal"]
     soccer_analysis = GoalChancesTables(goals, team_for=team_name)
@@ -177,7 +186,6 @@ if match:
         st.pyplot(game_openings.plot_game_openings(team_for=True, directory=directory))
     with col2:
         st.pyplot(game_openings.plot_game_openings(team_for=False, directory=directory))   
-    toc.generate()
 
     toc.header("Key Passes")
     col1, col2, _, = st.columns([3, 3, 2])
@@ -186,4 +194,7 @@ if match:
         st.pyplot(key_passes.plot_key_passes(team_for=True, directory=directory))
     with col2:
         st.pyplot(key_passes.plot_key_passes(team_for=False, directory=directory))   
+    
+    
+    
     toc.generate()
