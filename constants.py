@@ -45,7 +45,7 @@ class Constants:
         "sbred": "#E21017",
     }
 
-    FONT = "Avenir"
+    FONT = "AppleGothic"#"Avenir"
     STREAMLIT_COLOR = '#0E1117'
     TEXT_COLOR = '#222222'
     BACKGROUND_COLOR = '#d4af37'
