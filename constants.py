@@ -1,4 +1,5 @@
 import seaborn as sns
+from matplotlib import font_manager
 
 
 class Constants:
@@ -45,7 +46,7 @@ class Constants:
         "sbred": "#E21017",
     }
 
-    FONT = "Helvetica"#"Avenir"
+    # FONT = "Helvetica"#"Avenir"
     STREAMLIT_COLOR = '#0E1117'
     TEXT_COLOR = '#222222'
     BACKGROUND_COLOR = '#d4af37'
@@ -73,4 +74,16 @@ class Constants:
         COLORS["very_pale_red"], COLORS["pale_red"], COLORS["light_pale_red"], COLORS["light_red"], 
         COLORS["medium_light_red"], COLORS["medium_red"], COLORS["strong_red"], COLORS["sbred"]
     ]
-    
+
+        # Load the custom font from file and set it up
+    FONT_PATH = "resources/Lineal-Regular.ttf"  # Replace this with the actual path to your font file
+
+    @classmethod
+    def load_font(cls):
+        """Loads and registers the custom font."""
+        font_manager.fontManager.addfont(cls.FONT_PATH)
+        font_prop = font_manager.FontProperties(fname=cls.FONT_PATH)
+        cls.FONT = font_prop.get_name()  # Set the font name to be used
+
+# Initialize font loading at the class level so it is executed once
+Constants.load_font()

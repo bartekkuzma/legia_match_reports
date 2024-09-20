@@ -46,7 +46,7 @@ st.markdown("""
 
 col1, col2= st.columns([1, 10])
 with col1:
-    st.image("legia.ico")
+    st.image("resources/legia.ico")
 with col2:
     # st.title("Legia Warszawa match reports")
     st.markdown('<div class="centered"><h1 class="custom-title">Legia Warszawa match reports</h1></div>', unsafe_allow_html=True)
@@ -99,11 +99,11 @@ if match:
     st.subheader(f'Date: {match_details["match_date"].item()}')
     st.subheader(f'Referee: {match_details["referee"].item()}')
 
-    toc.header("Benchmark")
-    col, _, = st.columns([5, 1])
-    with col:
-        benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
-        st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
+    # toc.header("Benchmark")
+    # col, _, = st.columns([5, 1])
+    # with col:
+    #     benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
+    #     st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
 
     toc.header("OBV Heatmap")
     col1, col2, _, = st.columns([3, 3, 2])

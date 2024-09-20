@@ -40,8 +40,11 @@ class ObvPitches:
         fig, ax = plt.subplots(1, 1, figsize=figsize)
         title = self.team_for if team_for else "Opponent"
         heatmap = self.create_heatmap(ax, team_data)
+        
         plt.colorbar(heatmap, ax=ax, label='OBV')
         plt.suptitle(f"{title}'s OBV from Passes, Carries & Dribbles", fontsize=20, fontweight="bold")
+        plt.rcParams["text.color"] = Constants.TEXT_COLOR
+        plt.rcParams["font.family"] = Constants.FONT
         
         fig.savefig(
             f"{directory}/obv_map_{team_type}.png",

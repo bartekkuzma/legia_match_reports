@@ -203,9 +203,11 @@ class BenchmarkChart:
         ax2 = fig.add_subplot(gs[1])
         self.plot_team_data(self.team_against, df_against, ax2)
 
-        fig.text(s=f"Single game data points benchmarked against season averages using z-score calculations",
-         x=0.075, y =-0.05, fontsize=32)
+        fig.text(s=f"Single game data points benchmarked against season averages using z-score calculations", x=0.075, y =-0.05, fontsize=32)
         
+        plt.rcParams["text.color"] = Constants.TEXT_COLOR
+        plt.rcParams["font.family"] = Constants.FONT
+
         fig.savefig(
             f"{directory}/match_benchmark.png",
             facecolor=fig.get_facecolor(),
