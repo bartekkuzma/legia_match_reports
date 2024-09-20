@@ -160,7 +160,7 @@ if match:
     with col2:
         st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False))
 
-    toc.header("Recoveries Statse")
+    toc.header("Recoveries Stats")
     col, _, _, _ = st.columns(4)
     with col:
         recoveries_tables = RecoveriesTables(match_events, team_for=team_name)

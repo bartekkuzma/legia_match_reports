@@ -1,9 +1,9 @@
-pandas
+pandas == 2.0.3
 numpy == 1.25.1
-matplotlib
-streamlit
-plottable
-statsbombpy
-seaborn
-mplsoccer
-scipy
+matplotlib == 3.9.0
+streamlit == 1.38.0
+plottable == 0.1.5
+statsbombpy == 1.12.0
+seaborn == 0.13.2
+mplsoccer == 1.2.4
+scipy == 1.13.0
