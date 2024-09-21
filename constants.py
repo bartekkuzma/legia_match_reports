@@ -76,7 +76,7 @@ class Constants:
     ]
 
         # Load the custom font from file and set it up
-    FONT_PATH = "resources/Lineal-Regular.ttf"  # Replace this with the actual path to your font file
+    FONT_PATH = "resources/Raleway-Regular.ttf"  # Replace this with the actual path to your font file
 
     @classmethod
     def load_font(cls):

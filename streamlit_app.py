@@ -17,6 +17,7 @@ from plots_and_charts.match_events_tables import (RecoveriesTables,
 from plots_and_charts.obv_pitches import ObvPitches
 from plots_and_charts.xpass_chart import ExpectedPassChart
 from table_of_contents import Toc
+from utils import get_data
 
 st.set_page_config(
     page_title="Legia Warszawa Match Reports",
@@ -80,30 +81,35 @@ if match:
     match_details = available_matches[available_matches["match_id"] == match_id]
     opponent = np.where(match_details['home_team'] == team_name, match_details['away_team'], match_details['home_team']).item()
 
-    match_events = sb.events(match_id=match_id, creds=creds, include_360_metrics=True)
-    match_events = match_events.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
-    match_events = match_events.replace("Lucas Lima Linhares","Luquinhas")
-    match_events = match_events.replace("Marc Gual Huguet","Marc Gual")
-    match_events = match_events.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
-    match_events = match_events.replace("Sergio Barcia Laranxeira","Sergio Barcia")
+    match_events = get_data(match_id=match_id, data_type="events", creds=creds)
+    players_match_stats = get_data(match_id=match_id, data_type="player_match_stats", creds=creds)
 
-    players_match_stats = sb.player_match_stats(match_id=match_id, creds=creds)
-    players_match_stats = players_match_stats.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
-    players_match_stats = players_match_stats.replace("Lucas Lima Linhares","Luquinhas")
-    players_match_stats = players_match_stats.replace("Marc Gual Huguet","Marc Gual")
-    players_match_stats = players_match_stats.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
-    players_match_stats = players_match_stats.replace("Sergio Barcia Laranxeira","Sergio Barcia")
+    # match_events = match_events.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
+    # match_events = match_events.replace("Lucas Lima Linhares","Luquinhas")
+    # match_events = match_events.replace("Marc Gual Huguet","Marc Gual")
+    # match_events = match_events.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
+    # match_events = match_events.replace("Sergio Barcia Laranxeira","Sergio Barcia")
+    # match_events = match_events.replace("Maximiliano Oyedele","Maxi Oyedele")
+
+    # players_match_stats = sb.player_match_stats(match_id=match_id, creds=creds)
+    # players_match_stats = players_match_stats.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
+    # players_match_stats = players_match_stats.replace("Lucas Lima Linhares","Luquinhas")
+    # players_match_stats = players_match_stats.replace("Marc Gual Huguet","Marc Gual")
+    # players_match_stats = players_match_stats.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
+    # players_match_stats = players_match_stats.replace("Sergio Barcia Laranxeira","Sergio Barcia")
+    # players_match_stats = players_match_stats.replace("Maximiliano Oyedele","Maxi Oyedele")
+
 
     score = f'{match_details["home_team"].item()} {int(match_details["home_score"].item())} : {int(match_details["away_score"].item())} {match_details["away_team"].item()}'
     st.header(score)
     st.subheader(f'Date: {match_details["match_date"].item()}')
     st.subheader(f'Referee: {match_details["referee"].item()}')
 
-    # toc.header("Benchmark")
-    # col, _, = st.columns([5, 1])
-    # with col:
-    #     benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
-    #     st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
+    toc.header("Benchmark")
+    col, _, = st.columns([5, 1])
+    with col:
+        benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
+        st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
 
     toc.header("OBV Heatmap")
     col1, col2, _, = st.columns([3, 3, 2])

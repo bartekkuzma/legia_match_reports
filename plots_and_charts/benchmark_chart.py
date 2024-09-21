@@ -4,6 +4,7 @@ import pandas as pd
 from statsbombpy import sb
 
 from constants import Constants
+from utils import get_data
 
 
 class BenchmarkChart:
@@ -25,13 +26,13 @@ class BenchmarkChart:
         
         df = []
         for n in list_matches:
-            match_events = sb.events(match_id = n, include_360_metrics=True, creds=self.creds)
+            match_events = get_data(match_id = n, data_type="events", creds=self.creds)
+            # match_events = sb.events(match_id = n, include_360_metrics=True, creds=self.creds)
             teams = list(match_events["team"].unique())
             teams.remove(team)
             match_events["opposiiton"] = np.where(match_events["team"] == team, teams[0], team)
             df.append(match_events)
         df = pd.concat(df)
-        
         df[['x', 'y', 'z']] = df['location'].apply(pd.Series)
         df[['pass_end_x', 'pass_end_y']] = df['pass_end_location'].apply(pd.Series)
         df[['carry_end_x', 'carry_end_y']] = df['carry_end_location'].apply(pd.Series)
