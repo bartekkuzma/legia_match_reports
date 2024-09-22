@@ -67,20 +67,23 @@ class GameOpeningsPitches:
 
         return "Further"
 
+
     def prepare_data(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Prepare the goal kick data for analysis.
-
+    
         Returns:
             pd.DataFrame: Prepared data for visualization.
         """
         goal_kicks = self.goal_kicks.copy()
-        goal_kicks.loc[:, 'x_end'] = goal_kicks['pass_end_location'].str[0]
-        goal_kicks.loc[:, 'y_end'] = goal_kicks['pass_end_location'].str[1]
+        goal_kicks["x_end"] = goal_kicks['pass_end_location'].str[0]
+        goal_kicks["y_end"] = goal_kicks['pass_end_location'].str[1]
+    
         goal_kicks.loc[:, 'end_zone_gk'] = goal_kicks.apply(lambda row: self.classify_gk_zones(row['x_end'], row['y_end']), axis=1)   
-        goal_kicks.loc[:, "pass_outcome"] = goal_kicks["pass_outcome"].fillna("Complete")
+    
+        goal_kicks["pass_outcome"] = goal_kicks["pass_outcome"].fillna("Complete")
         data_points = goal_kicks[["team", "x_end", "y_end", "pass_outcome"]]
-
+    
         grouped_data = goal_kicks.groupby(["team", "end_zone_gk", "pass_outcome"], dropna=False).count()["id"].to_frame().reset_index()
         pivot_data = grouped_data.pivot_table(index=["team", "end_zone_gk"], columns="pass_outcome", values="id", fill_value=0)
         pivot_data["ratio"] = pivot_data.apply(lambda x: f"{x.get('Complete', 0)}/{x.get('Complete', 0) + x.get('Incomplete', 0)}", axis=1)
@@ -110,6 +113,11 @@ class GameOpeningsPitches:
         gk_data = gk_data[(gk_data["team"] == self.team_for) == team_for]
         data_points_complete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Complete")]
         data_points_incomplete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Incomplete")]
+        if not team_for:
+            data_points_complete['x_end'] = Constants.PITCH_DIMS["pitch_length"] - data_points_complete['x_end']
+            data_points_complete['y_end'] = Constants.PITCH_DIMS["pitch_width"] - data_points_complete['y_end']
+            data_points_incomplete['x_end'] = Constants.PITCH_DIMS["pitch_length"] - data_points_incomplete['x_end']
+            data_points_incomplete['y_end'] = Constants.PITCH_DIMS["pitch_width"] - data_points_incomplete['y_end']
 
         for _, row in gk_data.iterrows():
             zone = row['end_zone_gk']
@@ -119,10 +127,8 @@ class GameOpeningsPitches:
 
         # Swap red and green colors if plotting for the opponent
         colors = {"red": Constants.COLORS["red"], "yellow": Constants.COLORS["yellow"], "green": Constants.COLORS["green"]}
-        if not team_for:
-            colors["red"], colors["green"] = colors["green"], colors["red"]
 
-        gk_pitch_zones = self._generate_pitch_zones(zone_values, colors)
+        gk_pitch_zones = self._generate_pitch_zones(team_for=team_for, zone_values=zone_values, colors=colors)
 
         for zone in gk_pitch_zones:
             ax.add_patch(plt.Rectangle(
@@ -139,9 +145,10 @@ class GameOpeningsPitches:
                 color=Constants.COLORS["black"], ha='center', va='center', fontsize=24, zorder=2)
 
         # Add text for "Further" passes
+        further_y = Constants.PITCH_DIMS["pitch_length"] - Constants.PITCH_DIMS["p3"] + Constants.PITCH_DIMS["p3"] / 2 - 5 if team_for else Constants.PITCH_DIMS["p3"] - Constants.PITCH_DIMS["p3"] / 2 + 5
         ax.text(
             Constants.PITCH_DIMS["pitch_width"] / 2,
-            Constants.PITCH_DIMS["pitch_length"] - Constants.PITCH_DIMS["p3"] + Constants.PITCH_DIMS["p3"] / 2 - 10,
+            further_y,
             f"{zone_values['Further']}",
             color=Constants.COLORS["black"], ha='center', va='bottom', fontsize=24, zorder=2
         )
@@ -152,7 +159,7 @@ class GameOpeningsPitches:
             data_points_complete.y_end,
             s=200,
             edgecolors=Constants.COLORS["black"],
-            c=Constants.COLORS["blue"], 
+            facecolors=Constants.COLORS["blue"], 
             marker='o',
             ax=ax,
             zorder=10,
@@ -165,7 +172,7 @@ class GameOpeningsPitches:
             data_points_incomplete.y_end,
             s=200,
             edgecolors=Constants.COLORS["black"],
-            c=Constants.COLORS["sb_grey"], 
+            facecolors=Constants.COLORS["sb_grey"], 
             marker='o',
             ax=ax,
             zorder=10,
@@ -189,7 +196,7 @@ class GameOpeningsPitches:
         return fig
 
     @staticmethod
-    def _generate_pitch_zones(zone_values: dict[str, str], colors: dict[str, str]) -> list[dict[str, any]]:
+    def _generate_pitch_zones(team_for: bool, zone_values: dict[str, str], colors: dict[str, str]) -> list[dict[str, any]]:
         """
         Generate pitch zones for visualization.
 
@@ -212,23 +219,27 @@ class GameOpeningsPitches:
         zones = []
         for i, prefix in enumerate(["P1", "P2", "P3"]):
             if i == 0:
-                y = 0
                 height = Constants.PITCH_DIMS["p1"]
+                y = 0 if team_for else Constants.PITCH_DIMS["pitch_length"] - height
             elif i == 1:
-                y = Constants.PITCH_DIMS["p1"]
                 height = Constants.PITCH_DIMS["p2"] - Constants.PITCH_DIMS["p1"]
+                y = Constants.PITCH_DIMS["p1"] if team_for else Constants.PITCH_DIMS["pitch_length"] - Constants.PITCH_DIMS["p2"]     
             else:
-                y = Constants.PITCH_DIMS["p2"]
                 height = Constants.PITCH_DIMS["p3"] - Constants.PITCH_DIMS["p2"]
-            
-            color = ["red", "yellow", "green"][i]
-
+                y = Constants.PITCH_DIMS["p2"] if team_for else Constants.PITCH_DIMS["pitch_length"] - Constants.PITCH_DIMS["p3"]
+        
+            color = ["red", "yellow", "green"][i] if team_for else ["green", "yellow", "red"][i]
+            left_side = 0 if team_for else Constants.PITCH_DIMS["pitch_width"] - Constants.PITCH_DIMS["penalty_box_left_band"]
+            left_half = Constants.PITCH_DIMS["penalty_box_left_band"] if team_for else Constants.PITCH_DIMS["pitch_width"] - Constants.PITCH_DIMS["six_yard_box"]
+            right_side = Constants.PITCH_DIMS["pitch_width"] - Constants.PITCH_DIMS["penalty_box_left_band"] if team_for else 0
+            right_half = Constants.PITCH_DIMS["pitch_width"] - Constants.PITCH_DIMS["six_yard_box"] if team_for else Constants.PITCH_DIMS["penalty_box_left_band"]
+            middle = Constants.PITCH_DIMS["six_yard_box"]
             zones.extend([
-                create_zone(0, y, Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Left"], f"{prefix} Left Side", prefix),
-                create_zone(Constants.PITCH_DIMS["penalty_box_left_band"], y, Constants.PITCH_DIMS["six_yard_box"] - Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Half Left"], f"{prefix} Left Half-space", prefix),
-                create_zone(Constants.PITCH_DIMS["six_yard_box"], y, Constants.PITCH_DIMS["pitch_width"] - 2 * Constants.PITCH_DIMS["six_yard_box"], height, color, zone_values[f"{prefix} Central"], f"{prefix} Central", prefix),
-                create_zone(Constants.PITCH_DIMS["pitch_width"] - Constants.PITCH_DIMS["six_yard_box"], y, Constants.PITCH_DIMS["six_yard_box"] - Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Half Right"], f"{prefix} Right Half-space", prefix),
-                create_zone(Constants.PITCH_DIMS["pitch_width"] - Constants.PITCH_DIMS["penalty_box_left_band"], y, Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Right"], f"{prefix} Right Side", prefix),
+                create_zone(left_side, y, Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Left"], f"{prefix} Left Side", prefix),
+                create_zone(left_half, y, Constants.PITCH_DIMS["six_yard_box"] - Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Half Left"], f"{prefix} Left Half-space", prefix),
+                create_zone(middle, y, Constants.PITCH_DIMS["pitch_width"] - 2 * Constants.PITCH_DIMS["six_yard_box"], height, color, zone_values[f"{prefix} Central"], f"{prefix} Central", prefix),
+                create_zone(right_half, y, Constants.PITCH_DIMS["six_yard_box"] - Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Half Right"], f"{prefix} Right Half-space", prefix),
+                create_zone(right_side, y, Constants.PITCH_DIMS["penalty_box_left_band"], height, color, zone_values[f"{prefix} Right"], f"{prefix} Right Side", prefix),
             ])
 
         return zones

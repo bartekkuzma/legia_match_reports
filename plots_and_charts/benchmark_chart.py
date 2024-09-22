@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from statsbombpy import sb
 
 from constants import Constants
-from utils import get_data
+from utils import get_data, unpack_coordinates
 
 
 class BenchmarkChart:
@@ -27,15 +26,17 @@ class BenchmarkChart:
         df = []
         for n in list_matches:
             match_events = get_data(match_id = n, data_type="events", creds=self.creds)
-            # match_events = sb.events(match_id = n, include_360_metrics=True, creds=self.creds)
-            teams = list(match_events["team"].unique())
-            teams.remove(team)
-            match_events["opposiiton"] = np.where(match_events["team"] == team, teams[0], team)
             df.append(match_events)
         df = pd.concat(df)
-        df[['x', 'y', 'z']] = df['location'].apply(pd.Series)
-        df[['pass_end_x', 'pass_end_y']] = df['pass_end_location'].apply(pd.Series)
-        df[['carry_end_x', 'carry_end_y']] = df['carry_end_location'].apply(pd.Series)
+        # Unpack 'location', 'pass_end_location', and 'carry_end_location' at once and concatenate
+        df_unpacked = pd.concat([
+            df['location'].apply(unpack_coordinates, args=(3,)).apply(pd.Series).rename(columns={0: 'x', 1: 'y', 2: 'z'}),
+            df['pass_end_location'].apply(unpack_coordinates, args=(2,)).apply(pd.Series).rename(columns={0: 'pass_end_x', 1: 'pass_end_y'}),
+            df['carry_end_location'].apply(unpack_coordinates, args=(2,)).apply(pd.Series).rename(columns={0: 'carry_end_x', 1: 'carry_end_y'})
+        ], axis=1)
+
+        # Concatenate the new columns to the original dataframe
+        df = pd.concat([df, df_unpacked], axis=1)
         
         return df
     

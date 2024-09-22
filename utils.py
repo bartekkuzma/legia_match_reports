@@ -32,4 +32,18 @@ def replace_player_names(data: pd.DataFrame) -> pd.DataFrame:
         data = data.replace(full_name, short_name)
     return data
 
-        
+def unpack_coordinates(loc, expected_len):
+    """
+    Unpack coordinates from a list or tuple, handling missing values.
+
+    Args:
+        loc (list or tuple): The coordinate list/tuple to unpack.
+        expected_len (int): The expected number of values (e.g., 2 for [x, y], 3 for [x, y, z]).
+
+    Returns:
+        tuple: A tuple with length `expected_len`, filled with None for missing values.
+    """
+    if isinstance(loc, (list, tuple)):
+        loc = list(loc)  # Convert tuple to list to handle slicing and padding
+        return tuple(loc[:expected_len] + [None] * (expected_len - len(loc)))
+    return tuple([None] * expected_len)

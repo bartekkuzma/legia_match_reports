@@ -84,22 +84,6 @@ if match:
     match_events = get_data(match_id=match_id, data_type="events", creds=creds)
     players_match_stats = get_data(match_id=match_id, data_type="player_match_stats", creds=creds)
 
-    # match_events = match_events.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
-    # match_events = match_events.replace("Lucas Lima Linhares","Luquinhas")
-    # match_events = match_events.replace("Marc Gual Huguet","Marc Gual")
-    # match_events = match_events.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
-    # match_events = match_events.replace("Sergio Barcia Laranxeira","Sergio Barcia")
-    # match_events = match_events.replace("Maximiliano Oyedele","Maxi Oyedele")
-
-    # players_match_stats = sb.player_match_stats(match_id=match_id, creds=creds)
-    # players_match_stats = players_match_stats.replace("Rúben Gonçalo Silva Nascimento Vinagre","Rúben Vinagre")
-    # players_match_stats = players_match_stats.replace("Lucas Lima Linhares","Luquinhas")
-    # players_match_stats = players_match_stats.replace("Marc Gual Huguet","Marc Gual")
-    # players_match_stats = players_match_stats.replace("Joaquim Claude Gonçalves Araújo","Claude Gonçalves")
-    # players_match_stats = players_match_stats.replace("Sergio Barcia Laranxeira","Sergio Barcia")
-    # players_match_stats = players_match_stats.replace("Maximiliano Oyedele","Maxi Oyedele")
-
-
     score = f'{match_details["home_team"].item()} {int(match_details["home_score"].item())} : {int(match_details["away_score"].item())} {match_details["away_team"].item()}'
     st.header(score)
     st.subheader(f'Date: {match_details["match_date"].item()}')
