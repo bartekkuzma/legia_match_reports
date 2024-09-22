@@ -65,30 +65,21 @@ class BenchmarkChart:
         values = [1, 0.2]
         plot_data["alpha"] = np.select(conditions, values)
         # edge color
-        if team == self.team_for:
-            values = [Constants.TEAM_AGAINST_COLOR, Constants.TEAM_FOR_COLOR]
-        else:
-            values = [Constants.TEAM_FOR_COLOR, Constants.TEAM_AGAINST_COLOR]
-        plot_data["ec"] = np.select(conditions, values)
+        plot_data["ec"] = Constants.OFF_WHITE_COLOR
         # fill color
-        if team == self.team_for:
-            values = [Constants.TEAM_FOR_COLOR, Constants.TEAM_AGAINST_COLOR]
-        else:
-            values = [Constants.TEAM_AGAINST_COLOR, Constants.TEAM_FOR_COLOR]
-        plot_data["color"] = np.select(conditions, values)
+        plot_data["color"] = Constants.DARKGREEN_COLOR if team == self.team_for else Constants.SALMON_COLOR
         # size
         values = [5000, 500]
         plot_data["size"] = np.select(conditions, values)
         x = plot_data["plot"]
         y = pd.Series([y_value]).repeat(len(plot_data))
-        ax.scatter(x, y, s=plot_data["size"], alpha=plot_data["alpha"], c=plot_data["color"], ec=plot_data["ec"],
-                   lw=5, zorder=10)
+        ax.scatter(x, y, s=plot_data["size"], alpha=plot_data["alpha"], facecolor=plot_data["color"], ec=plot_data["ec"], lw=5, zorder=10)
+        
         text_df = plot_data[plot_data["match_id"] == self.game_id]
         text = round(text_df.iloc[0]["value"], 2)
         x_pos = text_df.iloc[0]["plot"]
-
-        ax.annotate(text, (x_pos, y_value - 0.05), c=Constants.COLORS["white"], fontsize=22, fontweight="bold",
-                    zorder=11, ha="center")
+        text_color = Constants.COLORS["white"]
+        ax.annotate(text, (x_pos, y_value - 0.05), c=text_color, fontsize=22, fontweight="bold", zorder=11, ha="center")
         
     def plot_team_data(self, team, df, ax):
         # set function for plotting a team's data
@@ -165,11 +156,12 @@ class BenchmarkChart:
                    "D&C OBV","Shots Conceded","Shots For","NPxG Conceded","NPxG For"]
         y_ticks=list(range(0, len(y_labels)))
 
+        ax.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
         # plot line for average
-        ax.axvline(x=0, c=Constants.COLORS["black"], ls="--", lw=5)
+        ax.axvline(x=0, c=Constants.COLORS["white"], ls="--", lw=5)
         ax.text(s="season average", x=0, y=-0.75, fontsize=28, ha="center")
         # set team name as subplot title
-        ax.set_title(label=f"{team}", y=1.05, fontsize=40, fontweight="bold")
+        ax.set_title(label=f"{team}", y=1.02, fontsize=40, fontweight="bold")
 
         ax.set_yticks(y_ticks)
 
@@ -178,13 +170,16 @@ class BenchmarkChart:
             ax.set_yticklabels(y_labels, fontsize=36)
         else:
             ax.set_yticklabels([], fontsize=36)
-        
+        for label in ax.get_yticklabels():
+            label.set_color(Constants.COLORS["white"])
+
         for i in range(0, len(y_labels)):
             ax.axhline(y=i, lw=3, c=Constants.COLORS["sb_grey"], alpha=0.5)
         
         for i in (["right","top","left","bottom"]):
             ax.spines[i].set_visible(False)
         ax.set_xlim(-3, 3)
+        ax.set_xticklabels([])
 
     def plot_benchmark(self, directory: str, figsize: tuple[int, int] = (40, 20)) -> plt.Figure:
         #get season long data for the team
@@ -195,8 +190,11 @@ class BenchmarkChart:
 
         #set details of plot
         fig = plt.figure(figsize=figsize, constrained_layout=True)
+        plt.rcParams["text.color"] = Constants.COLORS["white"]
+        plt.rcParams["font.family"] = Constants.FONT
         gs = fig.add_gridspec(nrows=1, ncols=2)
-        fig.patch.set_facecolor(Constants.COLORS["white"])
+
+        fig.patch.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
 
         #subplot for the team
         ax1 = fig.add_subplot(gs[0])
@@ -205,10 +203,7 @@ class BenchmarkChart:
         ax2 = fig.add_subplot(gs[1])
         self.plot_team_data(self.team_against, df_against, ax2)
 
-        fig.text(s=f"Single game data points benchmarked against season averages using z-score calculations", x=0.075, y =-0.05, fontsize=32)
-        
-        plt.rcParams["text.color"] = Constants.TEXT_COLOR
-        plt.rcParams["font.family"] = Constants.FONT
+        fig.suptitle(f"Single game data points benchmarked against season averages.", fontsize=50, fontweight="bold", ha="center", y=1.1)
 
         fig.savefig(
             f"{directory}/match_benchmark.png",

@@ -58,6 +58,9 @@ class Constants:
     TEAM_AGAINST_COLOR = "#e2001a"
     DARK_BACKGROUND_COLOR = "#2D2D34"
     LIGHT_TEXT_COLOR = '#FBFEFB'
+    SALMON_COLOR = "#B97375"
+    OFF_WHITE_COLOR = "#E2DCDE"
+    DARKGREEN_COLOR = "#466362"
 
     # Additional color mappings
     POSITIVE_COLOR = COLORS["green"]
@@ -65,7 +68,7 @@ class Constants:
     NEUTRAL_COLOR = COLORS["yellow"]
 
     DPI = 300
-    PAD_INCHES = 0
+    PAD_INCHES = 0.1
 
     CMAPLIST_XPASS = sns.color_palette("Spectral")
     CMAP_FOR_HEATMAP = [

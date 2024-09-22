@@ -125,7 +125,6 @@ class GameOpeningsPitches:
             if zone in zone_values:
                 zone_values[zone] = ratio
 
-        # Swap red and green colors if plotting for the opponent
         colors = {"red": Constants.COLORS["red"], "yellow": Constants.COLORS["yellow"], "green": Constants.COLORS["green"]}
 
         gk_pitch_zones = self._generate_pitch_zones(team_for=team_for, zone_values=zone_values, colors=colors)

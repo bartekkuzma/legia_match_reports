@@ -15,6 +15,7 @@ from plots_and_charts.key_passes_pitches import KeyPassesPitches
 from plots_and_charts.match_events_tables import (RecoveriesTables,
                                                   ShotsTables, ThrowInsTables)
 from plots_and_charts.obv_pitches import ObvPitches
+from plots_and_charts.shot_maps import ShotMaps
 from plots_and_charts.xpass_chart import ExpectedPassChart
 from table_of_contents import Toc
 from utils import get_data
@@ -90,18 +91,25 @@ if match:
     st.subheader(f'Referee: {match_details["referee"].item()}')
 
     toc.header("Benchmark")
-    col, _, = st.columns([5, 1])
-    with col:
+    if os.path.isfile(f"matches/{match_id}/match_benchmark.png"):
+        st.image(f"matches/{match_id}/match_benchmark.png", use_column_width=True)
+    else:
         benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
-        st.pyplot(benchmark_chart.plot_benchmark(directory=directory))
+        st.pyplot(benchmark_chart.plot_benchmark(directory=directory), clear_figure=True)
 
     toc.header("OBV Heatmap")
-    col1, col2, _, = st.columns([3, 3, 2])
+    col1, col2 = st.columns(2)
     obv_heatmap = ObvPitches(match_events, team_for=team_name)
     with col1:
-        st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=True, directory=directory))
+        if os.path.isfile(f"matches/{match_id}/obv_map_for.png"):
+            st.image(f"matches/{match_id}/obv_map_for.png", use_column_width=True)
+        else:
+            st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=True, directory=directory), clear_figure=True)
     with col2:
-        st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=False, directory=directory))   
+        if os.path.isfile(f"matches/{match_id}/obv_map_against.png"):
+            st.image(f"matches/{match_id}/obv_map_against.png", use_column_width=True)
+        else:
+            st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=False, directory=directory), clear_figure=True)
 
 
     goals = match_events[match_events["shot_outcome"] == "Goal"]
@@ -117,73 +125,87 @@ if match:
     toc.header("Goals Analysis")    
     col1, col2, col3, _ = st.columns([4, 4, 6, 4])
     with col1:
-        st.pyplot(figs["goals_time"])
+        st.pyplot(figs["goals_time"], clear_figure=True)
     with col2:
-        st.pyplot(figs["goals_place"])
+        st.pyplot(figs["goals_place"], clear_figure=True)
     with col3:
-        st.pyplot(figs["goals_type"])
+        st.pyplot(figs["goals_type"], clear_figure=True)
 
     toc.header("Chances Analysis")
     col1, col2, col3, _ = st.columns([4, 4, 6, 4])
     with col1:
-        st.pyplot(figs["chances_time"])
+        st.pyplot(figs["chances_time"], clear_figure=True)
     with col2:
-        st.pyplot(figs["chances_place"])
+        st.pyplot(figs["chances_place"], clear_figure=True)
     with col3:
-        st.pyplot(figs["chances_type"])
+        st.pyplot(figs["chances_type"], clear_figure=True)
     
-    toc.header("Shots Outcome")
+    toc.header("Shots Maps")
     shots = match_events[match_events["type"] == "Shot"]
+    shot_maps = ShotMaps(shots, team_for=team_name)
+    col1, col2 = st.columns(2)
+    with col1:
+        if os.path.isfile(f"matches/{match_id}/shot_maps_for.png"):
+            st.image(f"matches/{match_id}/shot_maps_for.png", use_column_width=True)
+        else:
+            st.pyplot(shot_maps.plot_shot_map(directory=directory, team_for=True), clear_figure=True)
+    with col2:
+        if os.path.isfile(f"matches/{match_id}/shot_maps_against.png"):
+            st.image(f"matches/{match_id}/shot_maps_against.png", use_column_width=True)
+        else:
+            st.pyplot(shot_maps.plot_shot_map(directory=directory, team_for=False), clear_figure=True)
+
+    toc.header("Shots Outcome")
     shot_tables = ShotsTables(shots, team_for=team_name)
     col1, col2, _ = st.columns([2, 5, 2])
     with col1:
-        st.pyplot(shot_tables.plot_team_shots_table(directory=directory))
+        st.pyplot(shot_tables.plot_team_shots_table(directory=directory), clear_figure=True)
     with col2:
-        st.pyplot(shot_tables.plot_individual_shots_table(directory=directory))
+        st.pyplot(shot_tables.plot_individual_shots_table(directory=directory), clear_figure=True)
 
     toc.header("Throw-Ins Outcome")
     passes = match_events[match_events["type"] == "Pass"]
     throw_ins_tables = ThrowInsTables(passes, team_for=team_name)
     col1, col2, _,  _ = st.columns(4)
     with col1:
-        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=True))
+        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=True), clear_figure=True)
     with col2:
-        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False))
+        st.pyplot(throw_ins_tables.plot_throw_ins(directory=directory, team_for=False), clear_figure=True)
 
     toc.header("Recoveries Stats")
     col, _, _, _ = st.columns(4)
     with col:
         recoveries_tables = RecoveriesTables(match_events, team_for=team_name)
-        st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory))
+        st.pyplot(recoveries_tables.plot_recovery_stats(directory=directory), clear_figure=True)
         
     toc.header("Passing Performance")
     col, _, = st.columns([5, 2])
     with col:
         xpass_charts = ExpectedPassChart(passes, team_for=team_name)
-        st.pyplot(xpass_charts.plot_xpass_plot(directory=directory))
+        st.pyplot(xpass_charts.plot_xpass_plot(directory=directory), clear_figure=True)
 
     toc.header("Final Third Touches")
     col, _, = st.columns([5, 2])
     with col:
         final_third_touches = FinalThirdTouchesPlots(match_events, team_for=team_name)
-        st.pyplot(final_third_touches.plot_final_third_touches(directory=directory))
+        st.pyplot(final_third_touches.plot_final_third_touches(directory=directory), clear_figure=True)
 
     toc.header("Game Openings")
     col1, col2, _, = st.columns([3, 3, 2])
     goal_kick = match_events[match_events["pass_type"] == "Goal Kick"]
     game_openings = GameOpeningsPitches(goal_kick, team_for=team_name)
     with col1:
-        st.pyplot(game_openings.plot_game_openings(team_for=True, directory=directory))
+        st.pyplot(game_openings.plot_game_openings(team_for=True, directory=directory), clear_figure=True)
     with col2:
-        st.pyplot(game_openings.plot_game_openings(team_for=False, directory=directory))   
+        st.pyplot(game_openings.plot_game_openings(team_for=False, directory=directory), clear_figure=True)   
 
     toc.header("Key Passes")
     col1, col2, _, = st.columns([3, 3, 2])
     key_passes = KeyPassesPitches(match_events, team_for=team_name)
     with col1:
-        st.pyplot(key_passes.plot_key_passes(team_for=True, directory=directory))
+        st.pyplot(key_passes.plot_key_passes(team_for=True, directory=directory), clear_figure=True)
     with col2:
-        st.pyplot(key_passes.plot_key_passes(team_for=False, directory=directory))   
+        st.pyplot(key_passes.plot_key_passes(team_for=False, directory=directory), clear_figure=True)   
     
     
     
