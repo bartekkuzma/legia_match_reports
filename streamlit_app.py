@@ -20,6 +20,7 @@ from plots_and_charts.xpass_chart import ExpectedPassChart
 from table_of_contents import Toc
 from utils import get_data
 
+REGENERATE = False
 st.set_page_config(
     page_title="Legia Warszawa Match Reports",
     layout="wide",
@@ -91,7 +92,7 @@ if match:
     st.subheader(f'Referee: {match_details["referee"].item()}')
 
     toc.header("Benchmark")
-    if os.path.isfile(f"matches/{match_id}/match_benchmark.png"):
+    if os.path.isfile(f"matches/{match_id}/match_benchmark.png") and not REGENERATE:
         st.image(f"matches/{match_id}/match_benchmark.png", use_column_width=True)
     else:
         benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
@@ -101,12 +102,12 @@ if match:
     col1, col2 = st.columns(2)
     obv_heatmap = ObvPitches(match_events, team_for=team_name)
     with col1:
-        if os.path.isfile(f"matches/{match_id}/obv_map_for.png"):
+        if os.path.isfile(f"matches/{match_id}/obv_map_for.png") and not REGENERATE:
             st.image(f"matches/{match_id}/obv_map_for.png", use_column_width=True)
         else:
             st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=True, directory=directory), clear_figure=True)
     with col2:
-        if os.path.isfile(f"matches/{match_id}/obv_map_against.png"):
+        if os.path.isfile(f"matches/{match_id}/obv_map_against.png") and not REGENERATE:
             st.image(f"matches/{match_id}/obv_map_against.png", use_column_width=True)
         else:
             st.pyplot(obv_heatmap.plot_obv_heatmap(team_for=False, directory=directory), clear_figure=True)
@@ -145,12 +146,12 @@ if match:
     shot_maps = ShotMaps(shots, team_for=team_name)
     col1, col2 = st.columns(2)
     with col1:
-        if os.path.isfile(f"matches/{match_id}/shot_maps_for.png"):
+        if os.path.isfile(f"matches/{match_id}/shot_maps_for.png") and not REGENERATE:
             st.image(f"matches/{match_id}/shot_maps_for.png", use_column_width=True)
         else:
             st.pyplot(shot_maps.plot_shot_map(directory=directory, team_for=True), clear_figure=True)
     with col2:
-        if os.path.isfile(f"matches/{match_id}/shot_maps_against.png"):
+        if os.path.isfile(f"matches/{match_id}/shot_maps_against.png") and not REGENERATE:
             st.image(f"matches/{match_id}/shot_maps_against.png", use_column_width=True)
         else:
             st.pyplot(shot_maps.plot_shot_map(directory=directory, team_for=False), clear_figure=True)
