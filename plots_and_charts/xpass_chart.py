@@ -132,7 +132,7 @@ class ExpectedPassChart:
             shrink=0.5,
             aspect=30
         )
-        cbar.set_ticks(ticks=[-self.pass_diff + 1, 0, self.pass_diff - 1], labels=[self.pass_diff, "0", self.pass_diff], fontsize=16)
+        cbar.set_ticks(ticks=[-self.pass_diff + 1, 0, self.pass_diff - 1], labels=[-self.pass_diff, "0", self.pass_diff], fontsize=16)
         cbar.set_label("Pass completion % - Expected completion %", rotation=90, labelpad=25, fontsize=22)
 
         fig.text(s=f"{self.team_for}'s passing performance", 

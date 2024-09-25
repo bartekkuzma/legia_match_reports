@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from mplsoccer import VerticalPitch
 
@@ -8,11 +7,10 @@ from utils import unpack_coordinates
 
 
 class ShotMaps:
-    """Class for analyzing and visualizing game opening pitches."""
 
     def __init__(self, shots_df: pd.DataFrame, team_for: str) -> None:
         """
-        Initialize the KeyPassesPitches class.
+        Initialize the ShotMaps class.
 
         Args:
             match_events (pd.DataFrame): DataFrame containing passes data.
@@ -28,7 +26,7 @@ class ShotMaps:
 
         return team_shots
     
-    def plot_shot_map(self, team_for: bool, directory: str, figsize: tuple[int, int] = (25, 18)) -> plt.Figure:
+    def plot_shot_map(self, team_for: bool, directory: str, figsize: tuple[int, int] = (8, 12)) -> plt.Figure:
         shots = self.prepare_data(team_for)
         team_type = "for" if team_for else "against"
 
@@ -50,7 +48,7 @@ class ShotMaps:
         )
 
         # create a subplot with 2 rows and 1 column
-        fig = plt.figure(figsize=(8, 12))
+        fig = plt.figure(figsize=figsize)
         fig.patch.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
         title = self.team_for if team_for else "Opponent"
         plt.rcParams["font.family"] = Constants.FONT
@@ -97,13 +95,13 @@ class ShotMaps:
 
 
         ax3.text(x=0.5, y=8.5, s='Shots', fontsize=20, fontweight='bold', color=Constants.COLORS["white"], ha='center')
-        ax3.text(x=0.5, y=8, s=f'{total_shots}', fontsize=16, color='red', ha='center')
+        ax3.text(x=0.5, y=8, s=f'{total_shots}', fontsize=16, color=Constants.COLORS["cyan"], ha='center')
         ax3.text(x=0.5, y=6.5, s='Goals', fontsize=20, fontweight='bold', color=Constants.COLORS["white"], ha='center')
-        ax3.text(x=0.5, y=6, s=f'{total_goals}', fontsize=16, color='red', ha='center')
+        ax3.text(x=0.5, y=6, s=f'{total_goals}', fontsize=16, color=Constants.COLORS["cyan"], ha='center')
         ax3.text(x=0.5, y=4.5, s='xG', fontsize=20, fontweight='bold', color=Constants.COLORS["white"], ha='center')
-        ax3.text(x=0.5, y=4, s=f'{total_xG:.2f}', fontsize=16, color='red', ha='center')
+        ax3.text(x=0.5, y=4, s=f'{total_xG:.2f}', fontsize=16, color=Constants.COLORS["cyan"], ha='center')
         ax3.text(x=0.5, y=2.5, s='xG/Shot', fontsize=20, fontweight='bold', color=Constants.COLORS["white"], ha='center')
-        ax3.text(x=0.5, y=2, s=f'{xG_per_shot:.2f}', fontsize=16, color='red', ha='center')
+        ax3.text(x=0.5, y=2, s=f'{xG_per_shot:.2f}', fontsize=16, color=Constants.COLORS["cyan"], ha='center')
 
         ax3.set_axis_off()
 
@@ -124,7 +122,7 @@ class ShotMaps:
         ax4.text(x=0.78, y=0.5, s=f'High Quality Chance', fontsize=15, color=Constants.COLORS["white"], ha='center')
 
         ax4.text(x=0.43, y=0.27, s=f'Goal', fontsize=15, color=Constants.COLORS["white"], ha='right')
-        ax4.scatter(x=0.47, y=0.3, s=300, color='red', edgecolor=Constants.COLORS["white"], linewidth=1, alpha=.7)
+        ax4.scatter(x=0.47, y=0.3, s=300, color=Constants.COLORS["red"], edgecolor=Constants.COLORS["white"], linewidth=1, alpha=.7)
         ax4.scatter(x=0.53, y=0.3, s=300, color=Constants.DARK_BACKGROUND_COLOR, edgecolor=Constants.COLORS["white"], linewidth=1)
         ax4.text(x=0.57, y=0.27, s=f'No Goal', fontsize=15, color=Constants.COLORS["white"], ha='left')
         ax4.set_axis_off()

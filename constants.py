@@ -44,9 +44,9 @@ class Constants:
         "medium_red": "#FF4040",
         "strong_red": "#FF0000",
         "sbred": "#E21017",
+        "cyan": "cyan",
     }
 
-    # FONT = "Helvetica"#"Avenir"
     STREAMLIT_COLOR = '#0E1117'
     TEXT_COLOR = '#222222'
     BACKGROUND_COLOR = '#d4af37'
