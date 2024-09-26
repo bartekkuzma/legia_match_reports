@@ -1,4 +1,5 @@
 import json
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -157,6 +158,7 @@ class GoalChancesTables:
         Returns:
             tuple: A tuple containing the data table and the color for the balance row.
         """
+        data_file = data_file if os.path.isfile(data_file) else "data/temp_" + "_".join(data_file.split("_")[1:])
         with open(data_file, 'r') as f:
             data = json.load(f)
         

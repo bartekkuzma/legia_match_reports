@@ -17,7 +17,11 @@ class Constants:
         "b2_zone": 50.0,
         "p1": 20.0,
         "p2": 50.0,
-        "p3": 70.0
+        "p3": 70.0,
+        "zone_14_x": 80.0,
+        "zone_14_y": 26.67,
+        "zone_14_length": 20.0,
+        "zone_14_width": 26.67,
     }
 
     COLORS = {
@@ -78,6 +82,8 @@ class Constants:
         COLORS["very_pale_red"], COLORS["pale_red"], COLORS["light_pale_red"], COLORS["light_red"], 
         COLORS["medium_light_red"], COLORS["medium_red"], COLORS["strong_red"], COLORS["sbred"]
     ]
+    CMAP_IND_GOOD = [EVEN_ROW_COLOR, "#fffae6", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"]
+    CMAP_IND_BAD = ["#fffae6", "#ffbaba", '#ff7b7b', "#ff0000"]
 
         # Load the custom font from file and set it up
     FONT_PATH = "resources/Raleway-Regular.ttf"  # Replace this with the actual path to your font file

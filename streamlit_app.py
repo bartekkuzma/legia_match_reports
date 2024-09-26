@@ -12,12 +12,16 @@ from plots_and_charts.final_third_touches_plot import FinalThirdTouchesPlots
 from plots_and_charts.game_openings_pitches import GameOpeningsPitches
 from plots_and_charts.goals_and_chances_tables import GoalChancesTables
 from plots_and_charts.high_turnovers import HighTurnovers
+from plots_and_charts.individual_stats import IndividualStats
 from plots_and_charts.key_passes_pitches import KeyPassesPitches
+from plots_and_charts.line_breaking_passes import LineBreakingPasses
 from plots_and_charts.match_events_tables import (RecoveriesTables,
                                                   ShotsTables, ThrowInsTables)
 from plots_and_charts.obv_pitches import ObvPitches
 from plots_and_charts.shot_maps import ShotMaps
+from plots_and_charts.top_5_players import Top5Players
 from plots_and_charts.xpass_chart import ExpectedPassChart
+from plots_and_charts.zone_14_passes import Zone14Passes
 from table_of_contents import Toc
 from utils import get_data
 
@@ -69,10 +73,12 @@ for comp_id in competitions:
 
 available_matches = matches[((matches["home_team"] == team_name) | (matches["away_team"] == team_name)) & (matches["match_status"] == "available")]
 
-competition = st.selectbox("Select a competition:", available_matches["competition"].sort_values().unique(), index=None)
-match_selection = available_matches[available_matches["competition"] == competition].sort_values("match_date", ascending=False)
-match_selection = {f"{home_team} vs {away_team}": match_id for match_id, home_team, away_team in zip(match_selection['match_id'], match_selection['home_team'], match_selection['away_team'])}
-match = st.selectbox("Select a match:", match_selection.keys(), index=None)
+col, _ = st.columns([6, 2])
+with col:
+    competition = st.selectbox("Select a competition:", available_matches["competition"].sort_values().unique(), index=None)
+    match_selection = available_matches[available_matches["competition"] == competition].sort_values("match_date", ascending=False)
+    match_selection = {f"{home_team} vs {away_team}": match_id for match_id, home_team, away_team in zip(match_selection['match_id'], match_selection['home_team'], match_selection['away_team'])}
+    match = st.selectbox("Select a match:", match_selection.keys(), index=None)
 
 if match:
     toc = Toc()
@@ -84,6 +90,7 @@ if match:
         os.makedirs(directory)
 
     match_details = available_matches[available_matches["match_id"] == match_id]
+    data_360 = match_details["match_status_360"].item()
     opponent = np.where(match_details['home_team'] == team_name, match_details['away_team'], match_details['home_team']).item()
 
     match_events = get_data(match_id=match_id, data_type="events", creds=creds)
@@ -305,6 +312,101 @@ if match:
             st.image(path, use_column_width=True)
         else:
             st.pyplot(key_passes.plot_key_passes(team_for=False, directory=directory), clear_figure=True)
+
+    if data_360 == "available":
+        toc.header("Line-breaking Passes")
+        line_breaking_passes = LineBreakingPasses(match_events, team_for=team_name)
+        col1, col2, _, = st.columns([3, 3, 2])
+        with col1:
+            path = f"matches/{match_id}/line_breaking_passes_for.png"
+            if os.path.isfile(path) and  REGENERATE:
+                st.image(path, use_column_width=True)
+            else:
+                st.pyplot(line_breaking_passes.plot_line_breaking_passes(team_for=True, directory=directory), clear_figure=True)
+        with col2:
+            path = f"matches/{match_id}/line_breaking_passes_against.png"
+            if os.path.isfile(path) and  REGENERATE:
+                st.image(path, use_column_width=True)
+            else:
+                st.pyplot(line_breaking_passes.plot_line_breaking_passes(team_for=False, directory=directory), clear_figure=True)
+
+    toc.header("Zone 14 Passes")
+    col1, col2, _, = st.columns([3, 3, 2])
+    zone_14_passes = Zone14Passes(passes, team_for=team_name)
+    with col1:
+        path = f"matches/{match_id}/passes_to_zone_14_for.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(zone_14_passes.plot_passes_to_zone_14(team_for=True, directory=directory), clear_figure=True)
+    with col2:
+        path = f"matches/{match_id}/passes_to_zone_14_against.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(zone_14_passes.plot_passes_to_zone_14(team_for=False, directory=directory), clear_figure=True)
+
+    with col1:
+        path = f"matches/{match_id}/passes_from_zone_14_for.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(zone_14_passes.plot_passes_from_zone_14(team_for=True, directory=directory), clear_figure=True)
+    with col2:
+        path = f"matches/{match_id}/passes_from_zone_14_against.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(zone_14_passes.plot_passes_from_zone_14(team_for=False, directory=directory), clear_figure=True)
+
+    toc.header("Offensive Individual Statistics")
+    col, _, = st.columns([6, 2])
+    individual_stats = IndividualStats(players_match_stats, team_for=team_name)
+    with col:
+        path = f"matches/{match_id}/individual_attack.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(individual_stats.plot_offensive_table(directory=directory), clear_figure=True)
+
+    toc.header("Defensive Individual Statistics")
+    col, _, = st.columns([6, 2])
+    individual_stats = IndividualStats(players_match_stats, team_for=team_name)
+    with col:
+        path = f"matches/{match_id}/individual_defence.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(individual_stats.plot_defensive_table(directory=directory), clear_figure=True)
+
+    toc.header("Top 5 Players")
+    col1, col2, _, = st.columns([3, 3, 2])
+    top_5_players = Top5Players(match_events, team_for=team_name)
+    with col1:
+        path = f"matches/{match_id}/top_5_obv.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(top_5_players.plot_obv_gain(directory=directory), clear_figure=True)
+
+        path = f"matches/{match_id}/top_5_def_1.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(top_5_players.plot_defensive_1(directory=directory), clear_figure=True)
+
+    with col2:
+        path = f"matches/{match_id}/top_5_progressors.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(top_5_players.plot_progressions(directory=directory), clear_figure=True)
+        
+        path = f"matches/{match_id}/top_5_def_2.png"
+        if os.path.isfile(path) and not REGENERATE:
+            st.image(path, use_column_width=True)
+        else:
+            st.pyplot(top_5_players.plot_defensive_2(directory=directory), clear_figure=True)
 
     
     toc.generate()
