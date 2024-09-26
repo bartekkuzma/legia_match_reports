@@ -45,6 +45,7 @@ class Constants:
         "strong_red": "#FF0000",
         "sbred": "#E21017",
         "cyan": "cyan",
+        "full_yelow": (255/255, 240/255, 0/255, 1),
     }
 
     STREAMLIT_COLOR = '#0E1117'
@@ -65,7 +66,7 @@ class Constants:
     # Additional color mappings
     POSITIVE_COLOR = COLORS["green"]
     NEGATIVE_COLOR = COLORS["red"]
-    NEUTRAL_COLOR = COLORS["yellow"]
+    NEUTRAL_COLOR = COLORS["full_yelow"]
 
     DPI = 300
     PAD_INCHES = 0.1

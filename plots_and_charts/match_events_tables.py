@@ -260,7 +260,7 @@ class RecoveriesTables:
         self.team_for = team_for
 
     def modify_match_events_timestamps(self, match_events: pd.DataFrame) -> pd.DataFrame:
-        match_events["datetime"] = match_events["timestamp"].apply(self.change_timestamp)
+        match_events.loc[:, "datetime"] = match_events["timestamp"].apply(self.change_timestamp)
         return match_events
     
     @staticmethod
@@ -296,7 +296,7 @@ class RecoveriesTables:
         for idx, row in recoveries.iterrows():
             if self.match_events.loc[self.match_events["index"] == row["index"]+1, "type"].item() in ["Pass", "Carry"]:
                 actions_after_rec = pd.concat([actions_after_rec, self.match_events.loc[self.match_events["index"] == row["index"]+1]])
-        actions_after_rec["is_progressive"] = actions_after_rec.apply(lambda x: self.prog_pass_carry(x), axis=1)
+        actions_after_rec.loc[:, "is_progressive"] = actions_after_rec.apply(lambda x: self.prog_pass_carry(x), axis=1)
         progressive_after_recovery = actions_after_rec["is_progressive"].mean()
         return progressive_after_recovery
 

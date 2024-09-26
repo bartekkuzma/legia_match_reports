@@ -90,7 +90,7 @@ class GameOpeningsPitches:
         
         return pivot_data.reset_index(), data_points
 
-    def plot_game_openings(self, team_for: bool, directory: str, figsize: tuple[int, int] = (25, 18)) -> plt.Figure:
+    def plot_game_openings(self, team_for: bool, directory: str, figsize: tuple[int, int] = (16, 12)) -> plt.Figure:
         """
         Plot the game openings visualization.
 
@@ -104,20 +104,25 @@ class GameOpeningsPitches:
         """
         gk_data, data_points = self.prepare_data()
         team_type = "for" if team_for else "against"
-        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=Constants.COLORS["white"], 
-                              line_color=Constants.COLORS["black"], linewidth=1, goal_type='box', goal_alpha=1)
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=Constants.DARK_BACKGROUND_COLOR, 
+                              line_color=Constants.COLORS["white"], linewidth=1, goal_type='box', goal_alpha=1)
         fig, ax = pitch.draw(figsize=figsize)
+        fig.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
+        plt.rcParams["font.family"] = Constants.FONT
 
         zone_values = {zone: "0/0" for zone in self.gk_zones}
 
         gk_data = gk_data[(gk_data["team"] == self.team_for) == team_for]
-        data_points_complete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Complete")]
-        data_points_incomplete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Incomplete")]
+        # Filter data
+        data_points_complete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Complete")].copy()
+        data_points_incomplete = data_points[((data_points["team"] == self.team_for) == team_for) & (data_points["pass_outcome"] == "Incomplete")].copy()
+
+        # Adjust coordinates if team_for is False
         if not team_for:
-            data_points_complete['x_end'] = Constants.PITCH_DIMS["pitch_length"] - data_points_complete['x_end']
-            data_points_complete['y_end'] = Constants.PITCH_DIMS["pitch_width"] - data_points_complete['y_end']
-            data_points_incomplete['x_end'] = Constants.PITCH_DIMS["pitch_length"] - data_points_incomplete['x_end']
-            data_points_incomplete['y_end'] = Constants.PITCH_DIMS["pitch_width"] - data_points_incomplete['y_end']
+            data_points_complete.loc[:, 'x_end'] = Constants.PITCH_DIMS["pitch_length"] - data_points_complete['x_end']
+            data_points_complete.loc[:, 'y_end'] = Constants.PITCH_DIMS["pitch_width"] - data_points_complete['y_end']
+            data_points_incomplete.loc[:, 'x_end'] = Constants.PITCH_DIMS["pitch_length"] - data_points_incomplete['x_end']
+            data_points_incomplete.loc[:, 'y_end'] = Constants.PITCH_DIMS["pitch_width"] - data_points_incomplete['y_end']
 
         for _, row in gk_data.iterrows():
             zone = row['end_zone_gk']
@@ -134,14 +139,14 @@ class GameOpeningsPitches:
                 (zone['rect'][0], zone['rect'][1]),
                 zone['rect'][2], zone['rect'][3],
                 facecolor=zone['color'], zorder=1,
-                edgecolor=(0, 0, 0, 0.7), linestyle='--', linewidth=1)
+                edgecolor=Constants.COLORS["white"], linestyle='--', linewidth=1)
             )
             # Display the value in each zone
             ax.text(
                 zone['rect'][0] + zone['rect'][2] / 2, 
                 zone['rect'][1] + zone['rect'][3] * 0.5,
                 str(zone['value']), 
-                color=Constants.COLORS["black"], ha='center', va='center', fontsize=24, zorder=2)
+                color=Constants.COLORS["white"], ha='center', va='center', fontsize=24, zorder=2)
 
         # Add text for "Further" passes
         further_y = Constants.PITCH_DIMS["pitch_length"] - Constants.PITCH_DIMS["p3"] + Constants.PITCH_DIMS["p3"] / 2 - 5 if team_for else Constants.PITCH_DIMS["p3"] - Constants.PITCH_DIMS["p3"] / 2 + 5
@@ -149,14 +154,14 @@ class GameOpeningsPitches:
             Constants.PITCH_DIMS["pitch_width"] / 2,
             further_y,
             f"{zone_values['Further']}",
-            color=Constants.COLORS["black"], ha='center', va='bottom', fontsize=24, zorder=2
+            color=Constants.COLORS["white"], ha='center', va='bottom', fontsize=24, zorder=2
         )
 
         # Scatter plot for complete passes
         complete_scatter = pitch.scatter(
             data_points_complete.x_end, 
             data_points_complete.y_end,
-            s=200,
+            s=100,
             edgecolors=Constants.COLORS["black"],
             facecolors=Constants.COLORS["blue"], 
             marker='o',
@@ -169,9 +174,9 @@ class GameOpeningsPitches:
         incomplete_scatter = pitch.scatter(
             data_points_incomplete.x_end, 
             data_points_incomplete.y_end,
-            s=200,
+            s=100,
             edgecolors=Constants.COLORS["black"],
-            facecolors=Constants.COLORS["sb_grey"], 
+            facecolors=Constants.COLORS["white"], 
             marker='o',
             ax=ax,
             zorder=10,
@@ -179,10 +184,13 @@ class GameOpeningsPitches:
         )
 
         # Add the legend to the plot
-        ax.legend(loc="upper right", fontsize=22)  # You can adjust location and font size as needed                        
+        legend_loc = "upper left" if team_for else "lower right"
+        leg = ax.legend(loc=legend_loc, fontsize=20)
+        for text in leg.get_texts():
+            plt.setp(text, color = Constants.TEXT_COLOR)  # You can adjust location and font size as needed                        
             
         title = self.team_for if team_for else "Opponent"
-        ax.set_title(f"{title}'s game openings", fontsize=30, color=Constants.TEXT_COLOR)
+        ax.set_title(f"{title}'s game openings.", fontsize=30, color=Constants.COLORS["white"], pad=30)
 
         fig.savefig(
             f"{directory}/openings_{team_type}.png",

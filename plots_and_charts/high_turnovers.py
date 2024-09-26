@@ -134,8 +134,8 @@ class HighTurnovers:
         ax4.set_xlim(0, 1)
         ax4.set_ylim(0, 1)
 
-        ax4.text(x=0.1, y=0.5, s=f'High Turnovers - possessions started in the 40 meters radius of opposite goal.', fontsize=15, color=Constants.COLORS["white"], ha='left')
-        ax4.text(x=0.1, y=0.35, s=f'High Turnovers which lead to shot marked as STARS.', fontsize=15, color=Constants.COLORS["white"], ha='left')
+        ax4.text(x=0.1, y=0.5, s=f'High Turnovers - possessions started in the 40 meters radius of opposite goal.', fontsize=18, color=Constants.COLORS["white"], ha='left')
+        ax4.text(x=0.1, y=0.35, s=f'High Turnovers which lead to shot marked as STARS.', fontsize=18, color=Constants.COLORS["white"], ha='left')
         ax4.set_axis_off()
 
         fig.savefig(

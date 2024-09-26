@@ -13,16 +13,10 @@ class GoalChancesTables:
     A class to analyze and visualize soccer data including goals and chances.
     """
 
-    def __init__(self, data_df: pd.DataFrame, team_for: str):
-        """
-        Initialize the GoalChancesTables class.
-
-        Args:
-            data_df (pd.DataFrame): DataFrame containing soccer data.
-            team_for (str): Name of the team for which the analysis is being done.
-        """
+    def __init__(self, data_df: pd.DataFrame, team_for: str, data_files: dict):
         self.data = data_df
         self.team_for = team_for
+        self.data_files = data_files
         self.time_ranges = ["1 - 15", "16 - 30", "31 - 45+", "45 - 60", "61 - 75", "76 - 90+"]
         self.zones = ["Right Side", "Right Half-space", "Middle", "Left Half-space", "Left Side", "Penalty Box"]
         self.preprocess_data()
@@ -149,7 +143,7 @@ class GoalChancesTables:
         
         return combined_data, color
 
-    def create_table_from_file(self, group_by: str, ranges: list, title: str, data_file: str, data_type: str) -> tuple:
+    def create_table_from_file(self, group_by: str, data_file: str, data_type: str) -> tuple:
         """
         Create a table of data grouped by a specific attribute from a JSON file.
 
@@ -250,34 +244,53 @@ class GoalChancesTables:
         )
         return fig
 
-    def generate_all_tables(self, directory: str, data_files: dict) -> list:
+    def generate_single_table(self, table_type: str, directory: str = None) -> plt.Figure:
         """
-        Generate and save all tables: by time, place, and type for both goals and chances.
+        Generate and return a single table plot based on the specified type.
 
         Args:
-            directory (str): The directory to save the generated tables.
-            data_files (dict): Dictionary containing paths to JSON files for different data types.
+            table_type (str): Type of the table to generate. 
+                              Options: 'goals_time', 'goals_place', 'goals_type', 'chances_time', 'chances_place', 'chances_type'
+            directory (str, optional): Directory to save the plot. If None, the plot won't be saved. Defaults to None.
+
+        Returns:
+            plt.Figure: The generated figure object.
         """
-        figs = {}
-        # Goals data
-        goals_time, color_time = self.create_table_from_df("time_range", self.time_ranges, "goals")
-        figs["goals_time"] = self.create_table_plot(goals_time, color_time, "Goals time", f"{directory}/goals_time.png", figsize=(4, 10))
+        data_type, attribute = table_type.split('_')
+        title = f"{data_type.capitalize()} {attribute}"
 
-        goals_place, color_place = self.create_table_from_df("zone", self.zones, "goals")
-        figs["goals_place"] = self.create_table_plot(goals_place, color_place, "Goals place", f"{directory}/goals_place.png", figsize=(4, 10))
+        if attribute in ['time', 'place']:
+            if data_type == 'goals':
+                ranges = self.time_ranges if attribute == 'time' else self.zones
+                data, color = self.create_table_from_df(
+                    group_by="time_range" if attribute == 'time' else "zone",
+                    ranges=ranges,
+                    data_type=data_type
+                )
+            else:  # chances
+                ranges = self.time_ranges if attribute == 'time' else self.zones
+                data, color = self.create_table_from_file(
+                    group_by="time_range" if attribute == 'time' else "zone",
+                    data_file=self.data_files[table_type],
+                    data_type=data_type
+                )
+        else:  # type
+            data, color = self.create_table_from_file(
+                group_by="type",
+                data_file=self.data_files[table_type],
+                data_type=data_type
+            )
 
-        goals_type, color_type = self.create_table_from_file("type", [], "Goals types", data_files["goals_type"], "goals")
-        figs["goals_type"] = self.create_table_plot(goals_type, color_type, "Goals types", f"{directory}/goals_type.png", figsize=(6, 10))
+        figsize = (6, 10) if attribute == 'type' else (4, 10)
+        filename = f"{directory}/{table_type}.png" if directory else None
+        
+        fig = self.create_table_plot(data=data,
+            color=color,
+            title=title,
+            filename=filename,
+            figsize=figsize
+        )
 
-        # # Chances data
-        chances_time, color_time = self.create_table_from_file("time_range", self.time_ranges, "Chances time", data_files["chances_time"], "chances")
-        figs["chances_time"] = self.create_table_plot(chances_time, color_time, "Chances time", f"{directory}/chances_time.png", figsize=(4, 10))
+        return fig
 
-        chances_place, color_place = self.create_table_from_file("zone", self.zones, "Chances place", data_files["chances_place"], "chances")
-        figs["chances_place"] = self.create_table_plot(chances_place, color_place, "Chances place", f"{directory}/chances_place.png", figsize=(4, 10))
-
-        chances_type, color_type = self.create_table_from_file("type", [], "Chances types", data_files["chances_type"], "chances")
-        figs["chances_type"] = self.create_table_plot(chances_type, color_type, "Chances types", f"{directory}/chances_type.png", figsize=(6, 10))
-
-        return figs
     

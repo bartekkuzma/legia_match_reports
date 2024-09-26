@@ -42,16 +42,19 @@ class KeyPassesPitches:
         data = data[data["pass_shot_assist"] == True]
         return data
 
-    def plot_key_passes(self, team_for: bool, directory: str, figsize: tuple[int, int] = (25, 18)) -> plt.Figure:
+    def plot_key_passes(self, team_for: bool, directory: str, figsize: tuple[int, int] = (16, 12)) -> plt.Figure:
         
         key_passes = self.prepare_data()
         key_passes = key_passes[(key_passes["team"] == self.team_for) == team_for]
         team_type = "for" if team_for else "against"
 
         pitch = VerticalPitch(pitch_type='statsbomb', positional=True, positional_linewidth=2, positional_linestyle="dotted", positional_color=Constants.COLORS["sb_grey"], 
-                              pitch_color=Constants.COLORS["white"], line_color=Constants.COLORS["black"], linewidth=1, goal_type='box', goal_alpha=1)
+                              pitch_color=Constants.DARK_BACKGROUND_COLOR, line_color=Constants.COLORS["white"], linewidth=1, goal_type='box', goal_alpha=1)
 
         fig, ax = pitch.draw(figsize=figsize)
+        fig.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
+        plt.rcParams["font.family"] = Constants.FONT
+
         transfer = key_passes[key_passes["pass_category"] == "Transfer"]
         positional = key_passes[key_passes["pass_category"] == "Positional"]
         individual = key_passes[key_passes["pass_category"] == "Individual"]
@@ -70,11 +73,11 @@ class KeyPassesPitches:
         pitch.arrows(xstart=individual["x"], ystart=individual["y"], xend=individual["x_end"], yend=individual["y_end"], width=2,
              headwidth=3, headlength=4, color=Constants.COLORS["blue"], ax=ax, label='Individual')
 
-        ax.legend(facecolor=Constants.COLORS["white"], handlelength=6, edgecolor=Constants.COLORS["sb_grey"], fontsize=24, loc='lower left', labelcolor=Constants.TEXT_COLOR)
+        ax.legend(facecolor=Constants.COLORS["white"], handlelength=6, edgecolor=Constants.COLORS["sb_grey"], fontsize=20, loc='lower left', labelcolor=Constants.TEXT_COLOR)
 
         # Set the title
         title = self.team_for if team_for else "Opponent"
-        ax_title = ax.set_title(f"{title}'s key passes", fontsize=30, color=Constants.TEXT_COLOR)
+        ax_title = ax.set_title(f"{title}'s key passes.", fontsize=30, color=Constants.COLORS["white"], pad=30)
 
         fig.savefig(
             f"{directory}/key_passes_{team_type}.png",

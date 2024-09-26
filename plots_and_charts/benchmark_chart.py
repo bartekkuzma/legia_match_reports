@@ -203,7 +203,7 @@ class BenchmarkChart:
         ax2 = fig.add_subplot(gs[1])
         self.plot_team_data(self.team_against, df_against, ax2)
 
-        fig.suptitle(f"Single game data points benchmarked against season averages.", fontsize=50, fontweight="bold", ha="center", y=1.1)
+        fig.suptitle(f"Single game data points benchmarked against season averages.", fontsize=50, fontweight="bold", ha="center", y=1.1, color=Constants.COLORS["white"])
 
         fig.savefig(
             f"{directory}/match_benchmark.png",

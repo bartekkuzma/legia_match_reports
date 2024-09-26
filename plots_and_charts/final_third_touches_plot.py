@@ -12,8 +12,8 @@ class FinalThirdTouchesPlots:
     def __init__(self, match_events: pd.DataFrame, team_for: str) -> None:
         self.match_events = match_events
         self.team_for = team_for
-        self.cmap_for = LinearSegmentedColormap.from_list("", [Constants.COLORS["white"], Constants.COLORS["sb_grey"], Constants.TEAM_FOR_COLOR])
-        self.cmap_against = LinearSegmentedColormap.from_list("", [Constants.COLORS["white"], Constants.COLORS["sb_grey"], Constants.TEAM_AGAINST_COLOR])
+        self.cmap_for = LinearSegmentedColormap.from_list("", [Constants.COLORS["white"], Constants.COLORS["sb_grey"], Constants.COLORS["blue"]])
+        self.cmap_against = LinearSegmentedColormap.from_list("", [Constants.COLORS["white"], Constants.COLORS["sb_grey"], Constants.COLORS["red"]])
 
     
     def prepare_data(self) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -25,20 +25,20 @@ class FinalThirdTouchesPlots:
         touches = touches.loc[(touches['x'] >= (Constants.PITCH_DIMS["pitch_length"] - Constants.PITCH_DIMS["final_third"]))]
         touches_for = touches.loc[(touches['team'] == self.team_for)]
         touches_against = touches.loc[(touches['team'] != self.team_for)]
-        touches_against['x'] = Constants.PITCH_DIMS["pitch_length"] - touches_against['x']
-        touches_against['y'] = Constants.PITCH_DIMS["pitch_width"] - touches_against['y']
+        touches_against.loc[:, 'x'] = Constants.PITCH_DIMS["pitch_length"] - touches_against['x']
+        touches_against.loc[:, 'y'] = Constants.PITCH_DIMS["pitch_width"] - touches_against['y']
 
         return touches_for, touches_against
     
     def plot_final_third_touches(self, directory: str, figsize: tuple[int, int] = (25, 18)):
         
         data_for, data_against = self.prepare_data()
-        pitch = Pitch(pitch_type='statsbomb', pitch_color=Constants.COLORS["white"], line_zorder=3, pad_top=10)
+        pitch = Pitch(pitch_type='statsbomb', pitch_color=Constants.DARK_BACKGROUND_COLOR, line_color=Constants.COLORS["white"], line_zorder=3, pad_top=10)
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize, constrained_layout=True)
-        fig.patch.set_facecolor(Constants.COLORS["white"])
+        fig.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
         pitch.draw(ax=ax)
 
-        plt.rcParams["text.color"] = Constants.TEXT_COLOR
+        plt.rcParams["text.color"] = Constants.COLORS["white"]
         plt.rcParams["font.family"] = Constants.FONT
 
         pitch.scatter(
@@ -46,7 +46,7 @@ class FinalThirdTouchesPlots:
             data_for.y,
             s=300,
             edgecolors=Constants.COLORS["sb_grey"],
-            c=Constants.TEAM_FOR_COLOR, 
+            c=Constants.COLORS["blue"], 
             marker='o',
             ax=ax,
             zorder=10
@@ -57,7 +57,7 @@ class FinalThirdTouchesPlots:
             data_against.y,
             s=300,
             edgecolors=Constants.COLORS["sb_grey"],
-            c=Constants.TEAM_AGAINST_COLOR, 
+            c=Constants.COLORS["red"], 
             marker='o',
             ax=ax,
             zorder=10
@@ -71,7 +71,7 @@ class FinalThirdTouchesPlots:
         bin_statistic['statistic'] = gaussian_filter(bin_statistic['statistic'], 1)
         pitch.heatmap(bin_statistic, ax=ax, cmap=self.cmap_against, edgecolors=Constants.COLORS["white"], zorder=1, alpha=0.5)
 
-        rect=plt.Rectangle([40, 0], 40, 80, color=Constants.COLORS["white"], zorder=2, alpha=1)
+        rect=plt.Rectangle([40, 0], 40, 80, color=Constants.DARK_BACKGROUND_COLOR, zorder=2, alpha=1)
         ax.add_artist(rect)
 
         total_for = len(data_for)
@@ -79,11 +79,11 @@ class FinalThirdTouchesPlots:
         total = total_for + total_against
         percent_for=round(total_for/total*100,1)
         percent_against=round(total_against/total*100,1)
-        ax.text(32.5, -2.5, s=f"Opposition:\n{total_against} ({percent_against}%)", fontsize=30, ha='center', weight="bold", color=Constants.TEAM_AGAINST_COLOR)
-        ax.text(87.5, -2.5, s=f"{self.team_for}:\n{total_for} ({percent_for}%)", fontsize=30, ha='center', weight="bold", color=Constants.TEAM_FOR_COLOR)
+        ax.text(32.5, -2.5, s=f"Opposition:\n{total_against} ({percent_against}%)", fontsize=30, ha='center', weight="bold", color=Constants.COLORS["red"])
+        ax.text(87.5, -2.5, s=f"{self.team_for}:\n{total_for} ({percent_for}%)", fontsize=30, ha='center', weight="bold", color=Constants.COLORS["blue"])
 
-        ax.arrow(37, -8, -5, 0, width=0.35, color=Constants.TEAM_AGAINST_COLOR)
-        ax.arrow(84, -8, 5, 0, width=0.35, color=Constants.TEAM_FOR_COLOR)
+        ax.arrow(37, -8, -5, 0, width=0.35, color=Constants.COLORS["red"])
+        ax.arrow(84, -8, 5, 0, width=0.35, color=Constants.COLORS["blue"])
 
         fig.text(x=0.05, y=1.05, s=f'Open Play touches in final 3rd', fontsize=40, weight="bold")
         fig.text(x=0.05, y=1.02, s=f'A touch is defined as the start point of any pass, dribble, carry or shot.', fontsize=32)
