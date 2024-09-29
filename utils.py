@@ -9,13 +9,13 @@ def save_data(data: pd.DataFrame, path_to_save: str) -> None:
     # Convert all columns that are lists or dicts to JSON strings
     data.to_pickle(path_to_save)
 
-def get_data(match_id: str, data_type: str, creds: dict[str, str], directory: str = "data") -> pd.DataFrame:
+def get_data(match_id: str, data_type: str, creds: dict[str, str], directory: str = "data", force_redownload: bool = False) -> pd.DataFrame:
     path_to_data = f"{directory}/{match_id}_{data_type}.pkl"
-    if os.path.isfile(path_to_data):
-        data = pd.read_pickle(path_to_data)
-    else:
+    if not os.path.isfile(path_to_data) or force_redownload:
         data = sb.events(match_id=match_id, creds=creds, include_360_metrics=True) if data_type == "events" else sb.player_match_stats(match_id=match_id, creds=creds)
         save_data(data=data, path_to_save=path_to_data)
+    else:
+        data = pd.read_pickle(path_to_data)
     data = replace_player_names(data)
     return data
 

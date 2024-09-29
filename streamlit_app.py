@@ -314,6 +314,9 @@ if match:
             st.pyplot(key_passes.plot_key_passes(team_for=False, directory=directory), clear_figure=True)
 
     if data_360 == "available":
+        if not "ball_receipt_in_space" in match_events.columns:
+            match_events = get_data(match_id=match_id, data_type="events", creds=creds, force_redownload=True)
+            players_match_stats = get_data(match_id=match_id, data_type="player_match_stats", creds=creds, force_redownload=True)
         toc.header("Line-breaking Passes")
         line_breaking_passes = LineBreakingPasses(match_events, team_for=team_name)
         col1, col2, _, = st.columns([3, 3, 2])
