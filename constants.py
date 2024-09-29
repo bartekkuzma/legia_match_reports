@@ -84,6 +84,7 @@ class Constants:
     ]
     CMAP_IND_GOOD = [EVEN_ROW_COLOR, "#fffae6", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"]
     CMAP_IND_BAD = ["#fffae6", "#ffbaba", '#ff7b7b', "#ff0000"]
+    SHOT_MAP_CMAP = ["#115f9a", "#a6d75b", "#c9e52f", "#d0ee11"]
 
         # Load the custom font from file and set it up
     FONT_PATH = "resources/Raleway-Regular.ttf"  # Replace this with the actual path to your font file

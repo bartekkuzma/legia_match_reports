@@ -192,13 +192,13 @@ if match:
         if os.path.isfile(path) and not REGENERATE:
             st.image(path, use_column_width=True)
         else:
-            st.pyplot(shot_maps.plot_shot_map(directory=directory, team_for=True), clear_figure=True)
+            st.pyplot(shot_maps.plot_advanced_shot_map(directory=directory, team_for=True), clear_figure=True)
     with col2:
         path = f"matches/{match_id}/shot_maps_against.png"
         if os.path.isfile(path) and not REGENERATE:
             st.image(path, use_column_width=True)
         else:
-            st.pyplot(shot_maps.plot_shot_map(directory=directory, team_for=False), clear_figure=True)
+            st.pyplot(shot_maps.plot_advanced_shot_map(directory=directory, team_for=False), clear_figure=True)
 
     toc.header("Shots Outcome")
     shot_tables = ShotsTables(shots, team_for=team_name)
