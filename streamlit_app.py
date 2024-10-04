@@ -63,7 +63,7 @@ team_name = "Legia Warszawa"
 season_id = 317
 competitions = (38, 353)
 
-visualizations = ["Benchmark", "OBV Heatmap", "Goals Analysis" "Chances Analysis", "Shots Maps", "Shots Outcome", 
+visualizations = ["Benchmark", "OBV Heatmap", "Goals Analysis", "Chances Analysis", "Shots Maps", "Shots Outcome", 
                   "High Turnovers", "Throw-Ins Outcome", "Recoveries Stats", "Passing Performance", "Final Third Touches", 
                   "Game Openings", "Key Passes", "Zone 14 Passes", "Offensive Individual Statistics", 
                   "Defensive Individual Statistics", "Top 5 Players"]
