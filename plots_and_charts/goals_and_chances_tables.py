@@ -99,8 +99,9 @@ class GoalChancesTables:
         Returns:
             tuple: A tuple containing the data table and the color for the balance row.
         """
-        data_for = self.data[(self.data['team'] == self.team_for)].groupby([group_by], dropna=False).count()['id'].to_frame()
-        data_against = self.data[(self.data['team'] != self.team_for)].groupby([group_by], dropna=False).count()['id'].to_frame()
+        data = self.data[self.data["type"] == "Pass"] if group_by == "zone" else self.data[self.data["type"] == "Shot"]
+        data_for = data[(data['team'] == self.team_for)].groupby([group_by], dropna=False).count()['id'].to_frame()
+        data_against = data[(data['team'] != self.team_for)].groupby([group_by], dropna=False).count()['id'].to_frame()
 
         for range_item in ranges:
             if range_item not in data_for.index:

@@ -118,6 +118,7 @@ if match:
 
         passes = match_events[match_events["type"] == "Pass"]
         shots = match_events[match_events["type"] == "Shot"]
+        goals_and_assists = match_events[(match_events["shot_outcome"] == "Goal") | (match_events["pass_goal_assist"] == True)]
         goals = match_events[match_events["shot_outcome"] == "Goal"]
         goal_kick = match_events[match_events["pass_type"] == "Goal Kick"]
 
@@ -191,7 +192,7 @@ if match:
             "chances_place": f"data/{match_id}_chances_place.json",
             "chances_type": f"data/{match_id}_chances_type.json"
         }
-        goals_chances_tables = GoalChancesTables(goals, team_for=team_name, data_files=data_files)
+        goals_chances_tables = GoalChancesTables(goals_and_assists, team_for=team_name, data_files=data_files)
         
         if "Goals Analysis" in selection:
             toc.header("Goals Analysis")    
