@@ -20,6 +20,7 @@ from plots_and_charts.match_events_tables import (RecoveriesTables,
 from plots_and_charts.obv_pitches import ObvPitches
 from plots_and_charts.shot_maps import ShotMaps
 from plots_and_charts.top_5_players import Top5Players
+from plots_and_charts.trendlines import TrendlineCharts
 from plots_and_charts.xpass_chart import ExpectedPassChart
 from plots_and_charts.zone_14_passes import Zone14Passes
 from table_of_contents import Toc
@@ -63,7 +64,7 @@ team_name = "Legia Warszawa"
 season_id = 317
 competitions = (38, 353)
 
-visualizations = ["Benchmark", "OBV Heatmap", "Goals Analysis", "Chances Analysis", "Shots Maps", "Shots Outcome", 
+visualizations = ["Benchmark", "Trendlines", "OBV Heatmap", "Goals Analysis", "Chances Analysis", "Shots Maps", "Shots Outcome", 
                   "High Turnovers", "Throw-Ins Outcome", "Recoveries Stats", "Passing Performance", "Final Third Touches", 
                   "Game Openings", "Key Passes", "Zone 14 Passes", "Offensive Individual Statistics", 
                   "Defensive Individual Statistics", "Top 5 Players"]
@@ -136,6 +137,36 @@ if match:
                 else:
                     benchmark_chart = BenchmarkChart(matches=matches, game_id=match_id, team_for=team_name, team_against=opponent, creds=creds)
                     st.pyplot(benchmark_chart.plot_benchmark(directory=directory), clear_figure=True)
+
+        if "Trendlines" in selection:
+            toc.header("Trendlines")
+            col, _ = st.columns([6, 2])
+            paths = {
+                "xg": f"matches/{match_id}/xg_trendline.png",
+                "obv": f"matches/{match_id}/obv_trendline.png",
+                "shots": f"matches/{match_id}/shots_trendline.png",
+                }
+            if not all(os.path.isfile(f) for f in paths.values()) or REGENERATE:
+                trendline_charts = TrendlineCharts(matches=matches, game_id=match_id, team_for=team_name, creds=creds)
+
+            with col:
+                path = paths["xg"]
+                if os.path.isfile(path) and not REGENERATE:
+                    st.image(path, use_column_width=True)
+                else:
+                    st.pyplot(trendline_charts.plot_xg_trendline(directory=directory), clear_figure=True)
+                
+                path = paths["obv"]
+                if os.path.isfile(path) and not REGENERATE:
+                    st.image(path, use_column_width=True)
+                else:
+                    st.pyplot(trendline_charts.plot_obv_trendline(directory=directory), clear_figure=True)
+                
+                path = paths["shots"]
+                if os.path.isfile(path) and not REGENERATE:
+                    st.image(path, use_column_width=True)
+                else:
+                    st.pyplot(trendline_charts.plot_shots_trendline(directory=directory), clear_figure=True)
 
         if "OBV Heatmap" in selection:
             toc.header("OBV Heatmap")
