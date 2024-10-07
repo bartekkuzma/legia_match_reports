@@ -84,7 +84,21 @@ class Constants:
     ]
     CMAP_IND_GOOD = [EVEN_ROW_COLOR, "#fffae6", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"]
     CMAP_IND_BAD = ["#fffae6", "#ffbaba", '#ff7b7b', "#ff0000"]
-    SHOT_MAP_CMAP = ["#115f9a", "#a6d75b", "#c9e52f", "#d0ee11"]
+    SHOT_MAP_CMAP = [
+    "#002B7F",  # Dark Blue (xG = 0.0)
+    "#1A4F97",  # Deep Blue (xG ≈ 0.025)
+    "#3077B1",  # Medium Blue (xG ≈ 0.05)
+    "#4B9CBF",  # Light Blue (xG ≈ 0.075)
+    "#69C1C4",  # Cyan (xG = 0.1)
+    "#B7D990",  # Light Yellow-Green (xG = 0.2)
+    "#F7E594",  # Pale Yellow (xG ≈ 0.25)
+    "#F6D576",  # Yellow (xG ≈ 0.3)
+    "#F5BA58",  # Light Orange (xG ≈ 0.4)
+    "#F0973B",  # Orange (xG ≈ 0.5)
+    "#E56C20",  # Dark Orange (xG ≈ 0.6)
+    "#B21710",  # Dark Red (xG = 0.8 and beyond)
+    "#B21710",  # Dark Red (xG = 0.8 and beyond)
+    ]
 
         # Load the custom font from file and set it up
     FONT_PATH = "resources/Raleway-Regular.ttf"  # Replace this with the actual path to your font file

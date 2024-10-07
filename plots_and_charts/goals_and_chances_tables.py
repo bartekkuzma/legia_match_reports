@@ -100,6 +100,8 @@ class GoalChancesTables:
             tuple: A tuple containing the data table and the color for the balance row.
         """
         data = self.data[self.data["type"] == "Pass"] if group_by == "zone" else self.data[self.data["type"] == "Shot"]
+        goals_for = len(self.data[(self.data["type"] == "Shot") & (self.data['team'] == self.team_for)])
+        goals_against = len(self.data[(self.data["type"] == "Shot") & (self.data['team'] != self.team_for)])
         data_for = data[(data['team'] == self.team_for)].groupby([group_by], dropna=False).count()['id'].to_frame()
         data_against = data[(data['team'] != self.team_for)].groupby([group_by], dropna=False).count()['id'].to_frame()
 
@@ -116,8 +118,8 @@ class GoalChancesTables:
         data_against = data_against.astype({"id": int})
 
         # Add headers
-        total_for = data_for['id'].sum()
-        total_against = data_against['id'].sum()
+        total_for = goals_for  # data_for['id'].sum()
+        total_against = goals_against  # data_against['id'].sum()
         data_for.columns = [total_for]
         data_against.columns = [total_against]
         
@@ -261,6 +263,9 @@ class GoalChancesTables:
         """
         data_type, attribute = table_type.split('_')
         title = f"{data_type.capitalize()} {attribute}"
+        title = title if title != "Goals place" else "Assists place"
+        title = "Chances assists place" if title == "Chances place" else title
+
 
         if attribute in ['time', 'place']:
             if data_type == 'goals':

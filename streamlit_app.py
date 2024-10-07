@@ -66,7 +66,7 @@ competitions = (38, 353)
 
 visualizations = ["Benchmark", "Trendlines", "OBV Heatmap", "Goals Analysis", "Chances Analysis", "Shots Maps", "Shots Outcome", 
                   "High Turnovers", "Throw-Ins Outcome", "Recoveries Stats", "Passing Performance", "Final Third Touches", 
-                  "Game Openings", "Key Passes", "Zone 14 Passes", "Offensive Individual Statistics", 
+                  "Game Openings", "Key Passes", "Line-breaking Passes", "Zone 14 Passes", "Offensive Individual Statistics", 
                   "Defensive Individual Statistics", "Top 5 Players"]
 visualizations_360 = ["Line-breaking Passes"]
 
@@ -113,13 +113,13 @@ if match:
             REGENERATE = True
     
     if clicked:
-        match_events = get_data(match_id=match_id, data_type="events", creds=creds)
+        match_events = get_data(match_id=match_id, data_type="events", creds=creds).sort_values("index")
         players_match_stats = get_data(match_id=match_id, data_type="player_match_stats", creds=creds)
 
         passes = match_events[match_events["type"] == "Pass"]
         shots = match_events[match_events["type"] == "Shot"]
-        goals_and_assists = match_events[(match_events["shot_outcome"] == "Goal") | (match_events["pass_goal_assist"] == True)]
         goals = match_events[match_events["shot_outcome"] == "Goal"]
+        goals_and_assists = match_events[(match_events["shot_outcome"] == "Goal") | (match_events["pass_goal_assist"] == True)] if "pass_goal_assist" in match_events.columns else goals.copy()
         goal_kick = match_events[match_events["pass_type"] == "Goal Kick"]
 
 

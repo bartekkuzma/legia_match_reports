@@ -54,12 +54,19 @@ class HighTurnovers:
     def prepare_data(self) -> pd.DataFrame:
 
         high_turnovers = self.match_events.drop_duplicates(subset='possession', keep='first').copy()
+        high_turnovers["new_possession_check"] = True
+        interception_won = self.match_events[(self.match_events["type"] == "Interception") & (self.match_events["interception_outcome"] == "Won")]
+        interception_won["new_possession_check"] = False
+        ball_recoveries = self.match_events[(self.match_events["type"] == "Ball Recovery") & (self.match_events["ball_recovery_recovery_failure"].isna())]
+        ball_recoveries["new_possession_check"] = False
+        high_turnovers = pd.concat([high_turnovers, interception_won, ball_recoveries])
+        
         coordinates = high_turnovers['location'].apply(unpack_coordinates, args=(2,)).apply(pd.Series).rename(columns={0: 'x', 1: 'y'})
         high_turnovers = pd.concat([high_turnovers, coordinates], axis=1)
         high_turnovers["is_high_turnover"] = high_turnovers.apply(lambda x: self.is_point_closer_than_radius(Constants.PITCH_DIMS["pitch_length"], Constants.PITCH_DIMS["pitch_width"]/2, self.radius, x["x"], x["y"]), axis=1)
         high_turnovers = high_turnovers[high_turnovers["is_high_turnover"] == True]
         high_turnovers["is_new_possession"] = high_turnovers.apply(lambda x: self.is_new_possession(x["possession"], x["possession_team"]), axis=1)
-        high_turnovers = high_turnovers[high_turnovers["is_new_possession"] == True]
+        high_turnovers = high_turnovers[((high_turnovers["is_new_possession"] == True) & (high_turnovers["new_possession_check"] == True)) | (high_turnovers["new_possession_check"] == False)]
         high_turnovers["lead_to_shot"] = high_turnovers["possession"].apply(self.lead_to_shot)
 
         return high_turnovers
@@ -69,8 +76,9 @@ class HighTurnovers:
         high_turnovers = self.prepare_data()
         team_type = "for" if team_for else "against"
         high_turnovers = high_turnovers[(high_turnovers["possession_team"] == self.team_for) == team_for]
-
+        player_all = high_turnovers.groupby("player").count().sort_values("index", ascending=False)["index"].reset_index()
         lead_to_shot = high_turnovers[high_turnovers["lead_to_shot"] == True]
+        player_lead = lead_to_shot.groupby("player").count().sort_values("index", ascending=False)["index"].reset_index()
         not_lead_to_shot = high_turnovers[high_turnovers["lead_to_shot"] != True]
 
         pitch = VerticalPitch(pitch_type='statsbomb', half=True, pitch_color=Constants.DARK_BACKGROUND_COLOR, pad_bottom=.5, 
@@ -111,6 +119,11 @@ class HighTurnovers:
         ax2.fill(y_fill, x_fill, facecolor=Constants.COLORS["blue"], edgecolor=Constants.COLORS["white"], alpha=0.3, zorder=1)
         ax2.scatter(not_lead_to_shot["y"].to_list(), not_lead_to_shot["x"].to_list(), c=Constants.COLORS["white"], edgecolor=Constants.COLORS["black"], s=100, label='High Turnovers', zorder=2, alpha=0.8)
         ax2.scatter(lead_to_shot["y"].to_list(), lead_to_shot["x"].to_list(), c='yellow', edgecolor='black', s=300, marker='*', label='Turnover Leading to Shot', zorder=3)
+        
+        # bbox_pass = dict(boxstyle="round", fc=Constants.COLORS["green"], ec="0.1", alpha=0.8)
+        # for one_pass in high_turnovers.to_dict(orient='records'):
+        #     ax2.text(one_pass["y"], one_pass["x"] - 7, one_pass["player"].replace(" ", "\n"), ha="center", fontsize=12, fontweight="bold", color=Constants.COLORS["white"], bbox=bbox_pass)
+        
         ax2.set_axis_off()
 
         # add another axis for the stats
@@ -120,10 +133,27 @@ class HighTurnovers:
         ax3.set_ylim(0, 1)
 
 
-        ax3.text(x=0.5, y=6.5, s='High turnovers', fontsize=20, fontweight='bold', color=Constants.COLORS["white"], ha='center')
-        ax3.text(x=0.5, y=6, s=f'{len(high_turnovers)}', fontsize=16, color=Constants.COLORS["cyan"], ha='center')
-        ax3.text(x=0.5, y=4.5, s='High turnovers\nleading to shot', fontsize=20, fontweight='bold', color=Constants.COLORS["white"], ha='center')
-        ax3.text(x=0.5, y=4, s=f'{len(lead_to_shot)}', fontsize=16, color=Constants.COLORS["cyan"], ha='center')
+        ax3.text(x=0.5, y=9, s='High turnovers', fontsize=18, fontweight='bold', color=Constants.COLORS["white"], ha='center')
+        ax3.text(x=0.5, y=8.5, s=f'{len(high_turnovers)}', fontsize=14, color=Constants.COLORS["cyan"], ha='center')
+        if len(high_turnovers)>0:
+            all_max = player_all['index'].max()
+            player_all_max = player_all[player_all['index'] == all_max]   
+            max_all_num_disp = 3 if all_max == 1 and len(player_all_max) >= 3 else len(player_all_max)
+            ax3.text(x=0.5, y=7.7, s='Top player(s)', fontsize=18, fontweight='bold', color=Constants.COLORS["white"], ha='center')
+            for index, player in player_all_max.iloc[:max_all_num_disp].iterrows():
+                ax3.text(x=0.5, y=7.2-0.5*index, s=f'{player_all_max.iloc[index]["player"]} ({player_all_max.iloc[index]["index"]})', fontsize=14, color=Constants.COLORS["cyan"], ha='center')
+
+        
+        ax3.text(x=0.5, y=4.5, s='High turnovers\nleading to shot', fontsize=18, fontweight='bold', color=Constants.COLORS["white"], ha='center')
+        ax3.text(x=0.5, y=4, s=f'{len(lead_to_shot)}', fontsize=14, color=Constants.COLORS["cyan"], ha='center')
+        if len(lead_to_shot)>0:
+            lead_max = player_lead['index'].max()
+            player_lead_max = player_lead[player_lead['index'] == lead_max]            
+            max_lead_num_disp = 3 if lead_max == 1 and len(player_lead_max) >= 3 else len(player_lead_max)
+            ax3.text(x=0.5, y=3.2, s='Top player(s)', fontsize=18, fontweight='bold', color=Constants.COLORS["white"], ha='center')
+            for index, player in player_lead_max.iloc[:max_lead_num_disp].iterrows():
+                ax3.text(x=0.5, y=2.7-0.5*index, s=f'{player_lead_max.iloc[index]["player"]} ({player_lead_max.iloc[index]["index"]})', fontsize=14, color=Constants.COLORS["cyan"], ha='center')
+
 
         ax3.set_axis_off()
 
@@ -134,8 +164,9 @@ class HighTurnovers:
         ax4.set_xlim(0, 1)
         ax4.set_ylim(0, 1)
 
-        ax4.text(x=0.1, y=0.5, s=f'High Turnovers - possessions started in the 40 meters radius of opposite goal.', fontsize=18, color=Constants.COLORS["white"], ha='left')
-        ax4.text(x=0.1, y=0.35, s=f'High Turnovers which lead to shot marked as STARS.', fontsize=18, color=Constants.COLORS["white"], ha='left')
+        ax4.text(x=0.1, y=0.5, s=f'High Turnovers - interception won, ball recovery or possessions \n\t\t\t\tthat started in the 40 meters radius of opposite goal.'.replace("\t", 8*" "), fontsize=16, color=Constants.COLORS["white"], ha='left')
+        ax4.text(x=0.1, y=0.35, s=f'High Turnovers which lead to shot marked as       .', fontsize=16, color=Constants.COLORS["white"], ha='left')
+        ax4.scatter(x=0.71, y=0.387, c='yellow', edgecolor='black', s=400, marker='*', zorder=3)
         ax4.set_axis_off()
 
         fig.savefig(
