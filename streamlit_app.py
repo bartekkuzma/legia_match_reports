@@ -11,7 +11,7 @@ from plots_and_charts.benchmark_chart import BenchmarkChart
 from plots_and_charts.final_third_touches_plot import FinalThirdTouchesPlots
 from plots_and_charts.game_openings_pitches import GameOpeningsPitches
 from plots_and_charts.goals_and_chances_tables import GoalChancesTables
-from plots_and_charts.high_turnovers import HighTurnovers
+from plots_and_charts.high_recoveries import HighRecoveries
 from plots_and_charts.individual_stats import IndividualStats
 from plots_and_charts.key_passes_pitches import KeyPassesPitches
 from plots_and_charts.line_breaking_passes import LineBreakingPasses
@@ -65,7 +65,7 @@ season_id = 317
 competitions = (38, 353)
 
 visualizations = ["Benchmark", "Trendlines", "OBV Heatmap", "Goals Analysis", "Chances Analysis", "Shots Maps", "Shots Outcome", 
-                  "High Turnovers", "Throw-Ins Outcome", "Recoveries Stats", "Passing Performance", "Final Third Touches", 
+                  "High Recoveries", "Throw-Ins Outcome", "Recoveries Stats", "Passing Performance", "Final Third Touches", 
                   "Game Openings", "Key Passes", "Line-breaking Passes", "Zone 14 Passes", "Offensive Individual Statistics", 
                   "Defensive Individual Statistics", "Top 5 Players"]
 visualizations_360 = ["Line-breaking Passes"]
@@ -272,22 +272,22 @@ if match:
                 else:
                     st.pyplot(shot_tables.plot_individual_shots_table(directory=directory), clear_figure=True)
 
-        if "High Turnovers" in selection:
-            toc.header("High Turnovers")
-            high_turnovers = HighTurnovers(match_events=match_events, team_for=team_name)
+        if "High Recoveries" in selection:
+            toc.header("High Recoveries")
+            high_recoveries = HighRecoveries(match_events=match_events, team_for=team_name)
             col1, col2, _ = st.columns([3, 3, 2])
             with col1:
-                path = f"matches/{match_id}/high_turnovers_for.png"
+                path = f"matches/{match_id}/high_recoveries_for.png"
                 if os.path.isfile(path) and not REGENERATE:
                     st.image(path, use_column_width=True)
                 else:
-                    st.pyplot(high_turnovers.plot_high_turnover_map(directory=directory, team_for=True), clear_figure=True)
+                    st.pyplot(high_recoveries.plot_high_turnover_map(directory=directory, team_for=True), clear_figure=True)
             with col2:
-                path = f"matches/{match_id}/high_turnovers_against.png"
+                path = f"matches/{match_id}/high_recoveries_against.png"
                 if os.path.isfile(path) and not REGENERATE:
                     st.image(path, use_column_width=True)
                 else:
-                    st.pyplot(high_turnovers.plot_high_turnover_map(directory=directory, team_for=False), clear_figure=True)
+                    st.pyplot(high_recoveries.plot_high_turnover_map(directory=directory, team_for=False), clear_figure=True)
 
         grand_col1, grand_col2 = st.columns(2)
         with grand_col1:
@@ -438,12 +438,12 @@ if match:
                 else:
                     st.pyplot(individual_stats.plot_offensive_table(directory=directory), clear_figure=True)
         
-        if "Offensive Individual Statistics" in selection:
-            toc.header("Offensive Individual Statistics")
+        if "Defensive Individual Statistics" in selection:
+            toc.header("Defensive Individual Statistics")
             col, _, = st.columns([6, 2])
             individual_stats = IndividualStats(players_match_stats, team_for=team_name)
             with col:
-                path = f"matches/{match_id}/individual_defence.png"
+                path = f"matches/{match_id}/individual_defence1.png"
                 if os.path.isfile(path) and not REGENERATE:
                     st.image(path, use_column_width=True)
                 else:

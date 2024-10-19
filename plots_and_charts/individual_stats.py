@@ -156,7 +156,7 @@ class IndividualStats:
             ColDef("player_match_aerial_ratio", title="Aerial duels \nratio", 
                    width=2, textprops={"fontsize": row_font_size, "ha": "center", "fontname": Constants.FONT}, cmap=self.create_cmap(defence_data, "player_match_aerial_ratio", self.cmap), formatter=self.format_float),
             ColDef("player_match_turnovers", title="Turnovers", 
-                   width=1.5, textprops={"fontsize": row_font_size, "ha": "center", "fontname": Constants.FONT}, cmap=self.create_cmap(defence_data, "player_match_turnovers", self.cmap)),
+                   width=1.5, textprops={"fontsize": row_font_size, "ha": "center", "fontname": Constants.FONT}, cmap=self.create_cmap(defence_data, "player_match_turnovers", self.cmap_bad)),
             ColDef("player_match_ball_recoveries", title="Ball \nrecoveries", 
                    width=1.5, textprops={"fontsize": row_font_size, "ha": "center", "fontname": Constants.FONT}, cmap=self.create_cmap(defence_data, "player_match_ball_recoveries", self.cmap)),
             ColDef("player_match_pressures", title="Pressures", 
