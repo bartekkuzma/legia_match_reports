@@ -7,3 +7,4 @@ statsbombpy == 1.12.0
 seaborn == 0.13.2
 mplsoccer == 1.2.4
 scipy == 1.13.0
+setuptools
