@@ -120,6 +120,7 @@ with col:
                 st.write(f"Default metrics and weights for {chosen_game_phase}")
                 # TODO: reversed metrics
                 # TODO: remove metrics with weight 0 when saving
+                # TODO: warning in individual stats
                 weights = {}
                 total_weight = 0
 
@@ -156,7 +157,7 @@ with col:
                 # Validate that weights sum to 1.0 and show the actual total
                 if round(total_weight, 4) != 1.0:
                     st.error(
-                        f"The sum of weights must equal 1.0. Current sum is: {total_weight:.2f}"
+                        f"The sum of weights must equal 1.0. Csurrent sum is: {total_weight:.2f}"
                     )
                 else:
                     st.success("The KPI system is set up correctly!")

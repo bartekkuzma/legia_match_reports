@@ -14,10 +14,16 @@ def plot_player_benchmark(
     reverse_metrics: list[str],
     directory: str,
 ):
-
     # Calculate z-scores for metrics
     for metric in metrics:
         player_df[f"{metric}_zscore"] = zscore(player_df[metric], nan_policy="omit")
+
+        # NOT DISPLAYING METRICS FOR NANs!!!
+        # Ensure z-scores are finite
+        # player_df[f"{metric}_zscore"] = player_df[f"{metric}_zscore"].replace(
+        #     [np.inf, -np.inf], np.nan
+        # )
+        # player_df[f"{metric}_zscore"].fillna(0, inplace=True)
 
     # Create figure and subplots
     fig, axes = plt.subplots(
@@ -37,7 +43,9 @@ def plot_player_benchmark(
             player_df[f"{metric}_zscore"] *= -1
 
         # Exclude the focus game for background plotting
-        nf_df = player_df[player_df["match_id"] != game_id]
+        nf_df = player_df[
+            (player_df["match_id"] != game_id) & (~player_df[f"{metric}_zscore"].isna())
+        ]
         ax.plot(
             nf_df[f"{metric}_zscore"],
             np.zeros(len(nf_df)),
@@ -50,27 +58,30 @@ def plot_player_benchmark(
         )
 
         # Focus game data
-        focus_df = player_df[player_df["match_id"] == game_id]
-        ax.text(
-            focus_df[f"{metric}_zscore"].iloc[0],
-            0,
-            focus_df[metric].iloc[0],
-            fontweight="bold",
-            color=Constants.LIGHT_TEXT_COLOR,
-            fontsize=22,
-            va="center",
-            ha="center",
-            zorder=11,
-        )
-        ax.scatter(
-            focus_df[f"{metric}_zscore"].iloc[0],
-            0,
-            s=3000,
-            facecolor=Constants.DARKGREEN_COLOR,
-            ec=Constants.COLORS["sb_grey"],
-            alpha=1,
-            zorder=10,
-        )
+        focus_df = player_df[
+            (player_df["match_id"] == game_id) & (~player_df[f"{metric}_zscore"].isna())
+        ]
+        if not focus_df.empty:
+            ax.text(
+                focus_df[f"{metric}_zscore"].iloc[0],
+                0,
+                focus_df[metric].iloc[0],
+                fontweight="bold",
+                color=Constants.LIGHT_TEXT_COLOR,
+                fontsize=22,
+                va="center",
+                ha="center",
+                zorder=11,
+            )
+            ax.scatter(
+                focus_df[f"{metric}_zscore"].iloc[0],
+                0,
+                s=3000,
+                facecolor=Constants.DARKGREEN_COLOR,
+                ec=Constants.COLORS["sb_grey"],
+                alpha=1,
+                zorder=10,
+            )
 
         # Max and min annotation details
         annotate_extreme_points(player_df, metric, ax, "max", y_offset=-0.0175)

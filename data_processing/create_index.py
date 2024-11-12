@@ -81,4 +81,7 @@ def calculate_player_index(preprocessed_df: pd.DataFrame, weights: dict[str, flo
             "performance_index",
         ]
     ]
+
+    preprocessed_df = preprocessed_df.reset_index(drop=True).copy()
+
     return preprocessed_df

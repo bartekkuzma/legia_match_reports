@@ -13,7 +13,6 @@ def plot_player_trendline(
     directory: str,
     figsize: tuple[int, int] = (16, 10),
 ):
-
     # Create the plot
     fig, ax = plt.subplots(figsize=figsize)
     fig.set_facecolor(Constants.DARK_BACKGROUND_COLOR)

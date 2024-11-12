@@ -54,7 +54,9 @@ class PlayerStatistics:
         return match_events
 
     def _preprocess_passes(self):
-        passes = self.player_team_events[self.player_team_events["type"] == "Pass"]
+        passes = self.player_team_events[
+            self.player_team_events["type"] == "Pass"
+        ].copy()
         if not passes.empty:
             passes[["pass_end_x", "pass_end_y"]] = passes["pass_end_location"].apply(
                 pd.Series
@@ -63,7 +65,9 @@ class PlayerStatistics:
         return passes
 
     def _preprocess_carries(self):
-        carries = self.player_team_events[self.player_team_events["type"] == "Carry"]
+        carries = self.player_team_events[
+            self.player_team_events["type"] == "Carry"
+        ].copy()
         if not carries.empty:
             carries[["carry_end_x", "carry_end_y"]] = carries[
                 "carry_end_location"
@@ -71,7 +75,9 @@ class PlayerStatistics:
         return carries
 
     def _preprocess_shots(self):
-        shots = self.player_team_events[self.player_team_events["type"] == "Shot"]
+        shots = self.player_team_events[
+            self.player_team_events["type"] == "Shot"
+        ].copy()
         if not shots.empty:
             try:
                 shots[["shot_end_x", "shot_end_y", "shot_end_z"]] = shots[
@@ -914,7 +920,7 @@ class PlayerStatistics:
                 self.player_team_events["team"]
                 == self.player_team_events["possession_team"]
             )
-        ]
+        ].copy()
         fifty_fifty_df["50_50_outcome"] = fifty_fifty_df["50_50"].apply(
             lambda x: x.get("outcome", {}).get("name", None)
         )
@@ -1288,7 +1294,7 @@ class PlayerStatistics:
                 self.player_team_events["team"]
                 != self.player_team_events["possession_team"]
             )
-        ]
+        ].copy()
         fifty_fifty_df["50_50_outcome"] = fifty_fifty_df["50_50"].apply(
             lambda x: x.get("outcome", {}).get("name", None)
         )
@@ -1642,7 +1648,7 @@ class PlayerStatistics:
             & (self.player_match_events["pass_type"].isin(self.set_pieces))
             & (self.player_match_events["x"] >= x_coord)
             & condition
-        ]
+        ].copy()
         set_pieces["timestamp"] = pd.to_timedelta(set_pieces["timestamp"])
         set_pieces_df = pd.DataFrame()
         for set_piece in set_pieces.to_dict(orient="records"):
@@ -1739,7 +1745,7 @@ class PlayerStatistics:
         opponents_ball_receipts = self.player_match_events[
             (self.player_match_events["team"] != self.team_name)
             & (self.player_match_events["type"] == "Ball Receipt*")
-        ]
+        ].copy()
         opponents_ball_receipts["timestamp"] = pd.to_timedelta(
             opponents_ball_receipts["timestamp"]
         )
@@ -1935,6 +1941,7 @@ class PlayerStatistics:
     @staticmethod
     def _count_gk_pass_length_accuracy(df, short_max=15.0, long_min=35.0):
         # Classify each pass length
+        df = df.copy()
         df["length_type"] = pd.cut(
             df["pass_length"],
             bins=[-float("inf"), short_max, long_min, float("inf")],
@@ -2270,14 +2277,14 @@ class PlayerStatistics:
         free_kick_op_half = self.passes[
             (self.passes["pass_type"] == "Free Kick")
             & (self.passes["x"] >= self.oppostion_half)
-        ]
-        corners = self.passes[self.passes["pass_type"] == "Corner"]
-        open_play_shots = self.shots[self.shots["shot_type"] == "Open Play"]
-        free_kick_shots = self.shots[self.shots["shot_type"] == "Free Kick"]
+        ].copy()
+        corners = self.passes[self.passes["pass_type"] == "Corner"].copy()
+        open_play_shots = self.shots[self.shots["shot_type"] == "Open Play"].copy()
+        free_kick_shots = self.shots[self.shots["shot_type"] == "Free Kick"].copy()
         penalities_won = self.player_match_events[
             (self.player_match_events["team"] != self.team_name)
             & (self.player_match_events["foul_committed_penalty"] == True)
-        ]
+        ].copy()
 
         free_kick_op_half["timestamp"] = pd.to_timedelta(free_kick_op_half["timestamp"])
         corners["timestamp"] = pd.to_timedelta(corners["timestamp"])
