@@ -1,0 +1,188 @@
+{
+    "Centre Back": {
+        "Attack": {
+            "total_progressive_passes": 0.12,
+            "ratio_progressive_passes": 0.12,
+            "total_long_balls": 0.1,
+            "ratio_long_balls": 0.1,
+            "total_line_breaking_passes": 0.1,
+            "ratio_line_breaking_passes": 0.1,
+            "total_passes": 0.08,
+            "ratio_passes": 0.08,
+            "total_passes_under_pressure": 0.06,
+            "ratio_passes_under_pressure": 0.06,
+            "sum_obv": 0.03,
+            "total_goal_contributions": 0.02,
+            "total_shots_contributions": 0.01,
+            "total_attacking_duels": 0.01,
+            "ratio_attacking_duels": 0.01
+        },
+        "Defense": {
+            "total_defensive_duels": 0.2,
+            "ratio_defensive_duels": 0.2,
+            "interceptions_won": 0.25,
+            "clearances": 0.2,
+            "shots_blocked": 0.15
+        }
+    },
+    "Full Back": {
+        "Attack": {
+            "total_progressive_passes": 0.1,
+            "ratio_progressive_passes": 0.08,
+            "total_final_third_passes": 0.08,
+            "ratio_final_third_passes": 0.06,
+            "total_crosses": 0.06,
+            "ratio_crosses": 0.06,
+            "total_passes_into_box": 0.06,
+            "ratio_passes_into_box": 0.06,
+            "total_dribbles": 0.05,
+            "ratio_dribbles": 0.05,
+            "carries_obv": 0.04,
+            "dribbles_obv": 0.04,
+            "assists": 0.04,
+            "key_passes": 0.04,
+            "xg_buildup": 0.04,
+            "total_goal_contributions": 0.03,
+            "total_shots_contributions": 0.02,
+            "total_passes": 0.02,
+            "ratio_passes": 0.02,
+            "total_touches_inside_box": 0.02,
+            "turnovers": 0.01,
+            "dispossessed": 0.01,
+            "total_attacking_duels": 0.005,
+            "ratio_attacking_duels": 0.005
+        },
+        "Defense": {
+            "total_defensive_duels": 0.15,
+            "ratio_defensive_duels": 0.15,
+            "dribbles_faced": 0.1,
+            "ratio_dribbles_successfully_defended": 0.12,
+            "ratio_tackles_dribbled_past": 0.1,
+            "won_defensive_ball_recoveries": 0.12,
+            "interceptions_won": 0.12,
+            "total_aggressive_actions": 0.08,
+            "clearances": 0.06
+        }
+    },
+    "Midfielder #6": {
+        "Attack": {
+            "total_passes": 0.12,
+            "ratio_passes": 0.12,
+            "total_through_balls": 0.1,
+            "ratio_through_balls": 0.1,
+            "key_passes": 0.1,
+            "second_assists": 0.08,
+            "xa": 0.08,
+            "xg_buildup": 0.1,
+            "xg": 0.06,
+            "total_goal_contributions": 0.06,
+            "total_shots_contributions": 0.04,
+            "ratio_shots": 0.02,
+            "dispossessed": 0.01,
+            "total_attacking_duels": 0.005,
+            "ratio_attacking_duels": 0.005
+        },
+        "Defense": {
+            "total_defensive_duels": 0.15,
+            "ratio_defensive_duels": 0.15,
+            "interceptions_won": 0.15,
+            "total_defensive_aerials": 0.12,
+            "ratio_defensive_aerials": 0.13,
+            "pressures": 0.1,
+            "pressures_oppostion_half": 0.1,
+            "ratio_pressures": 0.1
+        }
+    },
+    "Midfielder #8": {
+        "Attack": {
+            "key_passes": 0.11,
+            "xa": 0.1,
+            "second_assists": 0.08,
+            "total_goal_contributions": 0.08,
+            "total_through_balls": 0.08,
+            "ratio_through_balls": 0.08,
+            "total_passes": 0.07,
+            "ratio_passes": 0.07,
+            "xg": 0.08,
+            "shot_conversion": 0.06,
+            "total_touches_inside_box": 0.06,
+            "xg_buildup": 0.05,
+            "total_shots_contributions": 0.04,
+            "ratio_shots": 0.03,
+            "total_attacking_duels": 0.005,
+            "ratio_attacking_duels": 0.005
+        },
+        "Defense": {
+            "total_defensive_duels": 0.15,
+            "ratio_defensive_duels": 0.15,
+            "pressures": 0.2,
+            "pressures_oppostion_half": 0.2,
+            "ratio_pressures": 0.2,
+            "interceptions_won": 0.1
+        }
+    },
+    "Winger": {
+        "Attack": {
+            "total_dribbles": 0.07,
+            "ratio_dribbles": 0.07,
+            "dribbles_obv": 0.06,
+            "carries_obv": 0.06,
+            "assists": 0.06,
+            "key_passes": 0.06,
+            "total_passes_into_box": 0.06,
+            "ratio_passes_into_box": 0.06,
+            "total_crosses": 0.05,
+            "ratio_crosses": 0.05,
+            "total_final_third_passes": 0.05,
+            "ratio_final_third_passes": 0.05,
+            "total_touches_inside_box": 0.05,
+            "total_progressive_passes": 0.04,
+            "ratio_progressive_passes": 0.04,
+            "deep_progressions": 0.04,
+            "xg": 0.03,
+            "shot_conversion": 0.03,
+            "xg_buildup": 0.02,
+            "total_passes": 0.01,
+            "ratio_passes": 0.01,
+            "attacking_fouls_won": 0.01,
+            "total_attacking_duels": 0.01,
+            "ratio_attacking_duels": 0.01
+        },
+        "Defense": {
+            "pressure_regains": 0.15,
+            "total_defensive_actions_regains": 0.15,
+            "total_aggressive_actions": 0.15,
+            "total_defensive_duels": 0.12,
+            "ratio_defensive_duels": 0.12,
+            "ratio_tackles_dribbled_past": 0.12,
+            "interceptions_won": 0.1,
+            "total_passes": 0.09
+        }
+    },
+    "Forward": {
+        "Attack": {
+            "xg": 0.15,
+            "shot_conversion": 0.15,
+            "shot_quality": 0.12,
+            "total_touches_inside_box": 0.12,
+            "ratio_touches_inside_box_to_shots": 0.1,
+            "xa": 0.08,
+            "total_goal_contributions": 0.08,
+            "total_shots_contributions": 0.06,
+            "total_attacking_aerials": 0.04,
+            "ratio_attacking_aerials": 0.04,
+            "total_passes_under_pressure": 0.02,
+            "ratio_passes_under_pressure": 0.02,
+            "total_attacking_duels": 0.01,
+            "ratio_attacking_duels": 0.01
+        },
+        "Defense": {
+            "pressures": 0.25,
+            "pressures_oppostion_half": 0.25,
+            "ratio_pressures": 0.25,
+            "total_defensive_duels": 0.1,
+            "ratio_defensive_duels": 0.1,
+            "interceptions_won": 0.05
+        }
+    }
+}
