@@ -2,7 +2,6 @@
 .DS_Store
 __pycache__/
 players/
-matches/
 data/*_events.pkl
 data/*_player_match_stats.pkl
 data/*_player_stats.pkl
