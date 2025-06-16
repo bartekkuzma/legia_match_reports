@@ -8,7 +8,7 @@ class Toc:
     def __init__(self):
         self._items = []
         self._placeholder = None
-    
+
     def title(self, text):
         self._markdown(text, "h1")
 
@@ -28,11 +28,10 @@ class Toc:
 
     def _markdown(self, text, level):
         # Create a unique key for each header
-        key = re.sub('[^0-9a-zA-Z]+', '-', text).lower()
+        key = re.sub("[^0-9a-zA-Z]+", "-", text).lower()
 
         # Ensure header is displayed in the content
         st.markdown(f"<{level} id='{key}'>{text}</{level}>", unsafe_allow_html=True)
 
         # Add clickable entry in the Table of Contents
         self._items.append(f"* <a href='#{key}'>{text}</a>")
-        

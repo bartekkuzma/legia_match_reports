@@ -71,15 +71,11 @@ def get_credentials():
 
 def calculate_match_statistics(matches, team_name):
     matches.loc[:, "goals_scored"] = matches.apply(
-        lambda row: (
-            row["home_score"] if row["home_team"] == team_name else row["away_score"]
-        ),
+        lambda row: (row["home_score"] if row["home_team"] == team_name else row["away_score"]),
         axis=1,
     ).astype(int)
     matches.loc[:, "goals_conceded"] = matches.apply(
-        lambda row: (
-            row["away_score"] if row["home_team"] == team_name else row["home_score"]
-        ),
+        lambda row: (row["away_score"] if row["home_team"] == team_name else row["home_score"]),
         axis=1,
     ).astype(int)
     matches.loc[:, "match_result"] = matches.apply(
@@ -91,9 +87,7 @@ def calculate_match_statistics(matches, team_name):
         axis=1,
     )
     matches.loc[:, "opponent"] = matches.apply(
-        lambda row: (
-            row["away_team"] if row["home_team"] == team_name else row["home_team"]
-        ),
+        lambda row: (row["away_team"] if row["home_team"] == team_name else row["home_team"]),
         axis=1,
     )
     matches = (
@@ -121,9 +115,7 @@ def calculate_match_statistics(matches, team_name):
 def load_matches(team_name, season_id, competitions, creds):
     matches = pd.DataFrame()
     for comp_id in competitions:
-        comp_matches = sb.matches(
-            competition_id=comp_id, season_id=season_id, creds=creds
-        )
+        comp_matches = sb.matches(competition_id=comp_id, season_id=season_id, creds=creds)
         matches = pd.concat([matches, comp_matches])
     available_matches = matches[
         ((matches["home_team"] == team_name) | (matches["away_team"] == team_name))
@@ -138,9 +130,7 @@ def load_all_match_events(available_matches, creds):
         match_id = match["match_id"]
         events = get_data(match_id=match_id, data_type="events", creds=creds)
         all_matches_events = pd.concat([all_matches_events, events])
-    all_matches_events = all_matches_events.sort_values(
-        ["match_id", "index"]
-    ).reset_index(drop=True)
+    all_matches_events = all_matches_events.sort_values(["match_id", "index"]).reset_index(drop=True)
     return all_matches_events
 
 
@@ -212,9 +202,7 @@ def get_players_list(
         # Get unique players for the specified team, filtering out invalid (non-string) entries
         team_players = [
             player
-            for player in events_with_dates[events_with_dates["team"] == team_name][
-                "player"
-            ].unique()
+            for player in events_with_dates[events_with_dates["team"] == team_name]["player"].unique()
             if isinstance(player, str)
         ]
 
@@ -225,14 +213,11 @@ def get_players_list(
         for player in team_players:
             # Filter events for the specific player and team, and sort by match_date
             player_events = events_with_dates[
-                (events_with_dates["team"] == team_name)
-                & (events_with_dates["player"] == player)
+                (events_with_dates["team"] == team_name) & (events_with_dates["player"] == player)
             ].sort_values(by="match_date")
 
             # Get sorted match IDs
-            valid_matches = [
-                int(match_id) for match_id in player_events["match_id"].unique()
-            ]
+            valid_matches = [int(match_id) for match_id in player_events["match_id"].unique()]
 
             # Add the player and their valid match list to the dictionary
             players[player] = {"available_matches": valid_matches}
@@ -244,8 +229,9 @@ def get_players_list(
 
 
 # Load metrics and weights from JSON file
-def load_metrics(filename="resources/metrics_weights.json"):
-    with open(filename, "r") as f:
+def load_metrics(filename):
+    filepath = f"resources/metric_weights/{filename}.json"
+    with open(filepath, "r") as f:
         return json.load(f)
 
 
@@ -266,7 +252,7 @@ def load_postions(filename="resources/players_positions.json"):
 
 
 # Save metrics and weights to a new JSON file with a timestamp
-def save_metrics(data, filename_prefix="resources/metrics_weights"):
+def save_metrics(data, filename_prefix="resources/metric_weights/metrics_weights"):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{filename_prefix}_{timestamp}.json"
     with open(filename, "w") as f:
@@ -285,15 +271,24 @@ def get_newest_datetime(df: pd.DataFrame) -> pd.Timestamp | None:
     pd.Timestamp | None: The newest datetime value across all rows, or None if all are missing.
     """
     # Create a full datetime from match_date and kick_off
-    df["match_datetime"] = pd.to_datetime(
-        df["match_date"] + " " + df["kick_off"], errors="coerce"
-    )
+    df["match_datetime"] = pd.to_datetime(df["match_date"] + " " + df["kick_off"], errors="coerce")
     df["last_updated"] = pd.to_datetime(df["last_updated"], errors="coerce")
     df["last_updated_360"] = pd.to_datetime(df["last_updated_360"], errors="coerce")
 
     # Find the latest datetime across all specified columns
-    newest_datetime = (
-        df[["match_datetime", "last_updated", "last_updated_360"]].max().max()
-    )
+    newest_datetime = df[["match_datetime", "last_updated", "last_updated_360"]].max().max()
 
     return newest_datetime
+
+
+def clean_weights(weights_dict):
+    """Remove metrics with zero weights and renormalize remaining weights."""
+    # Remove zero weights
+    cleaned_weights = {k: round(v, 4) for k, v in weights_dict.items() if v > 0}
+
+    # Renormalize remaining weights
+    total = sum(cleaned_weights.values())
+    if total > 0:  # Avoid division by zero
+        cleaned_weights = {k: v / total for k, v in cleaned_weights.items()}
+
+    return cleaned_weights

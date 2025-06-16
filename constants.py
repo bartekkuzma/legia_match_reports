@@ -68,6 +68,7 @@ class Constants:
     OFF_WHITE_COLOR = "#E2DCDE"
     DARKGREEN_COLOR = "#466362"
     BURGUNDY_COLOR = "#9f1931"
+    LIGHTGREY_COLOR = "#45454E"
 
     # Additional color mappings
     POSITIVE_COLOR = COLORS["green"]
@@ -122,7 +123,7 @@ class Constants:
     ]
 
     # Load the custom font from file and set it up
-    FONT_PATH = "resources/Raleway-Regular.ttf"  # Replace this with the actual path to your font file
+    FONT_PATH = "/Users/bartek/Documents/legia_match_reports/resources/Raleway-Regular.ttf"  # Replace this with the actual path to your font file
 
     @classmethod
     def load_font(cls):
