@@ -8,3 +8,4 @@ data/*_player_match_stats.pkl
 data/*_player_stats.pkl
 .ipynb_checkpoints/
 *.ipynb
+processed_data/players_events.tsv
