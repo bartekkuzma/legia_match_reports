@@ -26,9 +26,7 @@ def plot_player_benchmark(
         # player_df[f"{metric}_zscore"].fillna(0, inplace=True)
 
     # Create figure and subplots
-    fig, axes = plt.subplots(
-        len(metrics), 1, figsize=(20, len(metrics) * 3), sharex=True
-    )
+    fig, axes = plt.subplots(len(metrics), 1, figsize=(20, len(metrics) * 3), sharex=True)
     fig.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
     for ax in axes:
         ax.set_facecolor(Constants.DARK_BACKGROUND_COLOR)
@@ -43,9 +41,7 @@ def plot_player_benchmark(
             player_df[f"{metric}_zscore"] *= -1
 
         # Exclude the focus game for background plotting
-        nf_df = player_df[
-            (player_df["match_id"] != game_id) & (~player_df[f"{metric}_zscore"].isna())
-        ]
+        nf_df = player_df[(player_df["match_id"] != game_id) & (~player_df[f"{metric}_zscore"].isna())]
         ax.plot(
             nf_df[f"{metric}_zscore"],
             np.zeros(len(nf_df)),
@@ -58,9 +54,7 @@ def plot_player_benchmark(
         )
 
         # Focus game data
-        focus_df = player_df[
-            (player_df["match_id"] == game_id) & (~player_df[f"{metric}_zscore"].isna())
-        ]
+        focus_df = player_df[(player_df["match_id"] == game_id) & (~player_df[f"{metric}_zscore"].isna())]
         if not focus_df.empty:
             ax.text(
                 focus_df[f"{metric}_zscore"].iloc[0],
@@ -183,13 +177,9 @@ def plot_player_benchmark(
 
 def annotate_extreme_points(player_df, metric, ax, extreme_type, y_offset):
     if extreme_type == "max":
-        labels = player_df[
-            player_df[f"{metric}_zscore"] == player_df[f"{metric}_zscore"].max()
-        ].reset_index(drop=True)
+        labels = player_df[player_df[f"{metric}_zscore"] == player_df[f"{metric}_zscore"].max()].reset_index(drop=True)
     else:
-        labels = player_df[
-            player_df[f"{metric}_zscore"] == player_df[f"{metric}_zscore"].min()
-        ].reset_index(drop=True)
+        labels = player_df[player_df[f"{metric}_zscore"] == player_df[f"{metric}_zscore"].min()].reset_index(drop=True)
 
     opponents = labels["opponent"].reset_index(drop=True)
     metric_value = round(labels[metric].iloc[0], 2)

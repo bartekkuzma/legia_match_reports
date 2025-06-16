@@ -21,7 +21,7 @@ class ShotsTables:
             return "On target"
         if shot_outcome == "Blocked":
             return "Blocked"
-        if shot_outcome in ["Off T", "Post", "Wayward"]: ## WAYWARD
+        if shot_outcome in ["Off T", "Post", "Wayward"]:  ## WAYWARD
             return "Off target"
 
     def preprocess_shots(self) -> pd.DataFrame:
@@ -40,13 +40,18 @@ class ShotsTables:
         shots_combined = shots_combined.astype({"id": int})
 
         return shots_combined
-    
+
     def create_teams_df(self, shots_df: pd.DataFrame, team_for: bool) -> pd.DataFrame:
-        shots = shots_df.loc[(shots_df["team"] == self.team_for) == team_for].groupby(["simple_outcome"], dropna=False).count()["id"].to_frame()
+        shots = (
+            shots_df.loc[(shots_df["team"] == self.team_for) == team_for]
+            .groupby(["simple_outcome"], dropna=False)
+            .count()["id"]
+            .to_frame()
+        )
         for shot_outcome in self.shot_outcomes:
             if shot_outcome not in shots.index:
                 shots.at[shot_outcome, "id"] = 0
-        
+
         shots.sort_index(inplace=True)
         shots = shots.astype({"id": int})
         sum_of_shots = shots.sum().item()
@@ -58,7 +63,7 @@ class ShotsTables:
         shots = pd.concat([new_row, shots], ignore_index=True)
         shots.columns = ["to_be_index", "id"]
         return shots
-    
+
     def plot_team_shots_table(self, directory: str, figsize: tuple[int, int] = (4, 8)):
         shots_df = self.preprocess_shots()
 
@@ -67,14 +72,19 @@ class ShotsTables:
         color = color if balance != 0 else Constants.NEUTRAL_COLOR
 
         table_col_defs = [
-            ColDef("shots", title="Shots outcomes", width=0.75, textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT}),
+            ColDef(
+                "shots",
+                title="Shots outcomes",
+                width=0.75,
+                textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT},
+            ),
             ColDef("id", title="", width=0.5, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
         ]
 
         fig, ax = plt.subplots(figsize=figsize)
         fig.set_facecolor(Constants.STREAMLIT_COLOR)
         ax.set_facecolor(Constants.BACKGROUND_COLOR)
-  
+
         plt.rcParams["text.color"] = Constants.TEXT_COLOR
         plt.rcParams["font.family"] = Constants.FONT
 
@@ -90,27 +100,33 @@ class ShotsTables:
 
         tab.rows[0].set_facecolor(Constants.HEADER_COLOR)
         tab.rows[len(shots_df) // 2].set_facecolor(Constants.HEADER_COLOR)
-        tab.rows[len(shots_df)-1].set_facecolor(color)
+        tab.rows[len(shots_df) - 1].set_facecolor(color)
 
         fig.savefig(
             f"{directory}/shots_outcome.png",
             facecolor=fig.get_facecolor(),
             dpi=Constants.DPI,
-            bbox_inches='tight',
-            pad_inches=Constants.PAD_INCHES
+            bbox_inches="tight",
+            pad_inches=Constants.PAD_INCHES,
         )
         return fig
-    
+
     def preprocess_shots_individuals(self) -> pd.DataFrame:
-        team_shots = self.shots_df[self.shots_df["team"] == self.team_for][["player", "shot_outcome", "shot_statsbomb_xg"]].groupby('player')
-        stats_per_player = team_shots.agg(
-            num_shots=('shot_statsbomb_xg', 'size'),
-            xg=('shot_statsbomb_xg', 'sum'),
-            mean_xg_per_shot=('shot_statsbomb_xg', 'mean'),
-        ).sort_values(["num_shots", "xg", "mean_xg_per_shot"], ascending=False).reset_index()
-        
-        stats_per_player['xg'] = stats_per_player['xg'].round(2)
-        stats_per_player['mean_xg_per_shot'] = stats_per_player['mean_xg_per_shot'].round(3)
+        team_shots = self.shots_df[self.shots_df["team"] == self.team_for][
+            ["player", "shot_outcome", "shot_statsbomb_xg"]
+        ].groupby("player")
+        stats_per_player = (
+            team_shots.agg(
+                num_shots=("shot_statsbomb_xg", "size"),
+                xg=("shot_statsbomb_xg", "sum"),
+                mean_xg_per_shot=("shot_statsbomb_xg", "mean"),
+            )
+            .sort_values(["num_shots", "xg", "mean_xg_per_shot"], ascending=False)
+            .reset_index()
+        )
+
+        stats_per_player["xg"] = stats_per_player["xg"].round(2)
+        stats_per_player["mean_xg_per_shot"] = stats_per_player["mean_xg_per_shot"].round(3)
         stats_per_player.set_index("player", inplace=True)
 
         return stats_per_player
@@ -120,15 +136,27 @@ class ShotsTables:
 
         table_col_defs = [
             ColDef("player", title="", width=2, textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT}),
-            ColDef("num_shots", title="Number of\nshots", width=1.5, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
-            ColDef("xg", title="xG", width=1.5, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
-            ColDef("mean_xg_per_shot", title="Mean xG\nper shot", width=1.5, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
+            ColDef(
+                "num_shots",
+                title="Number of\nshots",
+                width=1.5,
+                textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT},
+            ),
+            ColDef(
+                "xg", title="xG", width=1.5, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}
+            ),
+            ColDef(
+                "mean_xg_per_shot",
+                title="Mean xG\nper shot",
+                width=1.5,
+                textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT},
+            ),
         ]
 
         fig, ax = plt.subplots(figsize=figsize)
         fig.set_facecolor(Constants.STREAMLIT_COLOR)
         ax.set_facecolor(Constants.BACKGROUND_COLOR)
-  
+
         plt.rcParams["text.color"] = Constants.TEXT_COLOR
         plt.rcParams["font.family"] = Constants.FONT
 
@@ -146,13 +174,14 @@ class ShotsTables:
             f"{directory}/individual_shots.png",
             facecolor=fig.get_facecolor(),
             dpi=Constants.DPI,
-            bbox_inches='tight',
-            pad_inches=Constants.PAD_INCHES
+            bbox_inches="tight",
+            pad_inches=Constants.PAD_INCHES,
         )
         return fig
-    
+
+
 class ThrowInsTables:
-        
+
     def __init__(self, throw_ins_df: pd.DataFrame, team_for: str) -> None:
         self.throw_ins_df = throw_ins_df
         self.team_for = team_for
@@ -165,15 +194,22 @@ class ThrowInsTables:
         if location[0] > 0.33 * Constants.PITCH_DIMS["pitch_length"]:
             return "Mid"
         return "Low"
-    
+
     def process_single_group(self, throw_ins_df: pd.DataFrame, team_for: bool, complete: bool) -> pd.DataFrame:
-        
+
         col_name = "Complete" if complete else "Incomplete"
-        throw_ins = throw_ins_df.loc[((throw_ins_df["team"] == self.team_for) == team_for) & (throw_ins_df["pass_outcome"] == col_name)].groupby(["pitch_third"], dropna=False).count()["id"].to_frame()
+        throw_ins = (
+            throw_ins_df.loc[
+                ((throw_ins_df["team"] == self.team_for) == team_for) & (throw_ins_df["pass_outcome"] == col_name)
+            ]
+            .groupby(["pitch_third"], dropna=False)
+            .count()["id"]
+            .to_frame()
+        )
         for throw_ins_zone in self.throw_ins_zones:
             if throw_ins_zone not in throw_ins.index:
                 throw_ins.at[throw_ins_zone, "id"] = 0
-        
+
         throw_ins = throw_ins.reindex(self.throw_ins_zones)
         throw_ins = throw_ins.astype({"id": int})
         sum_of_throw_ins = throw_ins.sum().item()
@@ -187,7 +223,7 @@ class ThrowInsTables:
         return throw_ins
 
     def preprocess_throw_ins(self, team_for: bool) -> pd.DataFrame:
-        
+
         throw_ins = self.throw_ins_df[self.throw_ins_df["pass_type"] == "Throw-in"].copy()
         throw_ins["pitch_third"] = throw_ins["location"].apply(self.pitch_third)
         throw_ins["pass_outcome"] = throw_ins["pass_outcome"].fillna("Complete")
@@ -205,7 +241,6 @@ class ThrowInsTables:
 
         return throw_ins_combined
 
-                
     def plot_throw_ins(self, directory: str, team_for: bool, figsize: tuple[int, int] = (4, 6)):
         throw_ins = self.preprocess_throw_ins(team_for)
         for_who = "for" if team_for else "against"
@@ -218,7 +253,12 @@ class ThrowInsTables:
         color = color if balance != 0 else Constants.NEUTRAL_COLOR
 
         table_col_defs = [
-            ColDef("throw_ins", title=f"Throw-ins {for_who}", width=0.75, textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT}),
+            ColDef(
+                "throw_ins",
+                title=f"Throw-ins {for_who}",
+                width=0.75,
+                textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT},
+            ),
             ColDef("id", title="", width=0.5, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
         ]
 
@@ -241,19 +281,20 @@ class ThrowInsTables:
 
         tab.rows[0].set_facecolor(Constants.HEADER_COLOR)
         tab.rows[len(throw_ins) // 2].set_facecolor(Constants.HEADER_COLOR)
-        tab.rows[len(throw_ins)-1].set_facecolor(color)
+        tab.rows[len(throw_ins) - 1].set_facecolor(color)
 
         fig.savefig(
             f"{directory}/throw_ins_{for_who}.png",
             facecolor=fig.get_facecolor(),
             dpi=Constants.DPI,
-            bbox_inches='tight',
-            pad_inches=Constants.PAD_INCHES
+            bbox_inches="tight",
+            pad_inches=Constants.PAD_INCHES,
         )
         return fig
 
+
 class RecoveriesTables:
-        
+
     def __init__(self, match_events: pd.DataFrame, team_for: str) -> None:
         self.match_events = self.modify_match_events_timestamps(match_events)
         self.recoveries = match_events[match_events["type"] == "Ball Recovery"]
@@ -262,7 +303,7 @@ class RecoveriesTables:
     def modify_match_events_timestamps(self, match_events: pd.DataFrame) -> pd.DataFrame:
         match_events.loc[:, "datetime"] = match_events["timestamp"].apply(self.change_timestamp)
         return match_events
-    
+
     @staticmethod
     def prog_pass_carry(df):
         if df["type"] == "Carry":
@@ -278,24 +319,28 @@ class RecoveriesTables:
 
     @staticmethod
     def change_timestamp(timestamp):
-        return datetime.datetime.strptime(timestamp, '%H:%M:%S.%f').time()
-    
+        return datetime.datetime.strptime(timestamp, "%H:%M:%S.%f").time()
+
     @staticmethod
     def time_delta(time1, time2):
         datetime1 = datetime.datetime.combine(datetime.datetime.today(), time1)
         datetime2 = datetime.datetime.combine(datetime.datetime.today(), time2)
-        
+
         # Calculate the difference
         time_difference = datetime1 - datetime2
 
         return time_difference.total_seconds()
-    
 
     def calculate_progressive_after_recovery(self, recoveries: pd.DataFrame) -> float:
         actions_after_rec = pd.DataFrame()
         for idx, row in recoveries.iterrows():
-            if self.match_events.loc[self.match_events["index"] == row["index"]+1, "type"].item() in ["Pass", "Carry"]:
-                actions_after_rec = pd.concat([actions_after_rec, self.match_events.loc[self.match_events["index"] == row["index"]+1]])
+            if self.match_events.loc[self.match_events["index"] == row["index"] + 1, "type"].item() in [
+                "Pass",
+                "Carry",
+            ]:
+                actions_after_rec = pd.concat(
+                    [actions_after_rec, self.match_events.loc[self.match_events["index"] == row["index"] + 1]]
+                )
         actions_after_rec.loc[:, "is_progressive"] = actions_after_rec.apply(lambda x: self.prog_pass_carry(x), axis=1)
         progressive_after_recovery = actions_after_rec["is_progressive"].mean()
         return progressive_after_recovery
@@ -312,7 +357,7 @@ class RecoveriesTables:
                 lost_after_rec.append(1)
             else:
                 lost_after_rec.append(0)
-        lost_after_recovery = sum(lost_after_rec)/len(lost_after_rec)
+        lost_after_recovery = sum(lost_after_rec) / len(lost_after_rec)
         return lost_after_recovery
 
     def calculate_recovery_after_lost(self, recoveries: pd.DataFrame) -> float:
@@ -327,7 +372,7 @@ class RecoveriesTables:
                 lost_after_rec.append(1)
             else:
                 lost_after_rec.append(0)
-        recovery_after_lost = sum(lost_after_rec)/len(lost_after_rec)
+        recovery_after_lost = sum(lost_after_rec) / len(lost_after_rec)
         return recovery_after_lost
 
     def calculate_stats(self) -> pd.DataFrame:
@@ -342,18 +387,23 @@ class RecoveriesTables:
             "% Progressive first \nPass/Carry after \nRecovery": [format(progressive_after_recovery, ".2%")],
             "% Lost within 6 seconds \nafter Recovery": [format(lost_after_recovery, ".2%")],
             "% Recovery within \n6 seconds after Lost": [format(recovery_after_lost, ".2%")],
-            }
+        }
         recoveries = pd.DataFrame(recoveries_dict).T
         recoveries.columns = ["value"]
 
         return recoveries
-    
+
     def plot_recovery_stats(self, directory: str, figsize: tuple[int, int] = (6, 5)):
         recoveries = self.calculate_stats()
         table_col_defs = [
-                    ColDef("index", title="Recoveries stats", width=1, textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT}),
-                    ColDef("value", title="", width=1, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
-                ]
+            ColDef(
+                "index",
+                title="Recoveries stats",
+                width=1,
+                textprops={"fontsize": 16, "ha": "left", "fontname": Constants.FONT},
+            ),
+            ColDef("value", title="", width=1, textprops={"fontsize": 16, "ha": "center", "fontname": Constants.FONT}),
+        ]
 
         fig, ax = plt.subplots(figsize=figsize)
         fig.set_facecolor(Constants.STREAMLIT_COLOR)
@@ -361,7 +411,7 @@ class RecoveriesTables:
 
         plt.rcParams["text.color"] = Constants.TEXT_COLOR
         plt.rcParams["font.family"] = Constants.FONT
-        plt.axis('off')
+        plt.axis("off")
 
         tab = Table(
             recoveries,
@@ -377,8 +427,7 @@ class RecoveriesTables:
             f"{directory}/recoveries.png",
             facecolor=fig.get_facecolor(),
             dpi=Constants.DPI,
-            bbox_inches='tight',
-            pad_inches=Constants.PAD_INCHES
+            bbox_inches="tight",
+            pad_inches=Constants.PAD_INCHES,
         )
         return fig
-    

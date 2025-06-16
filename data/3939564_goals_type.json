@@ -1,0 +1,46 @@
+{
+    "data_for": {
+        "id": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+        ],
+        "type": [
+            "Positional vs. base",
+            "Positional vs. pressing",
+            "Counterpressing",
+            "Counterattack (intercept high)",
+            "Counterattack (intercept low)",
+            "Counterattack (set pieces)",
+            "Set pieces",
+            "Penalty"
+        ]
+    },
+    "data_against": {
+        "id": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "type": [
+            "Positional vs. base",
+            "Positional vs. pressing",
+            "Counterpressing",
+            "Counterattack (intercept high)",
+            "Counterattack (intercept low)",
+            "Counterattack (set pieces)",
+            "Set pieces",
+            "Penalty"
+        ]
+    }
+}

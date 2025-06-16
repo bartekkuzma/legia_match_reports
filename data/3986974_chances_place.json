@@ -1,0 +1,38 @@
+{
+    "data_for": {
+        "id": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+        ],
+        "zone": [
+            "Right Side",
+            "Right Half-space",
+            "Middle",
+            "Left Half-space",
+            "Left Side",
+            "Penalty Box"
+        ]
+    },
+    "data_against": {
+        "id": [
+            0,
+            3,
+            5,
+            1,
+            1,
+            0
+        ],
+        "zone": [
+            "Right Side",
+            "Right Half-space",
+            "Middle",
+            "Left Half-space",
+            "Left Side",
+            "Penalty Box"
+        ]
+    }
+}
